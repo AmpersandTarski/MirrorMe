@@ -1,0 +1,47 @@
+[
+    {
+        "concept": "Criterion",
+        "segments": [
+            {
+                "expADL": "critText",
+                "text": null,
+                "segType": "Exp",
+                "expSQL": "select\n distinct\n        \"Criterion\" as src, \"critText\" as tgt\n from \"Criterion\"\n where \"Criterion\" IS NOT NULL AND \"critText\" IS NOT NULL",
+                "seqNr": 0,
+                "label": null
+            },
+            {
+                "expADL": null,
+                "text": " (i.e.: '",
+                "segType": "Text",
+                "expSQL": null,
+                "seqNr": 1,
+                "label": null
+            },
+            {
+                "expADL": "critShowText",
+                "text": null,
+                "segType": "Exp",
+                "expSQL": "select\n distinct\n        \"Criterion\" as src, \"critShowText\" as tgt\n from \"Criterion\"\n where \"Criterion\" IS NOT NULL AND \"critShowText\" IS NOT NULL",
+                "seqNr": 2,
+                "label": null
+            },
+            {
+                "expADL": null,
+                "text": "')",
+                "segType": "Text",
+                "expSQL": null,
+                "seqNr": 3,
+                "label": null
+            }
+        ],
+        "label": "ShowCrit",
+        "isDefault": true
+    },
+    {
+        "concept": "Criterion",
+        "segments": [],
+        "label": "CritCheckbox",
+        "isDefault": false
+    }
+]

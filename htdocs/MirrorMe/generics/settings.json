@@ -1,0 +1,11 @@
+{
+    "mysqlSettings": {
+        "dbUser": "ampersand",
+        "dbHost": "localhost",
+        "dbPass": "ampersand",
+        "dbsignalTableName": "__all_signals__",
+        "dbName": "ampersand_crittexts"
+    },
+    "versionInfo": "Ampersand v3.5.0[branch_#228:44da3d6], build time: 08-Apr-16 08:36:09 West-Europa (zomertijd)",
+    "contextName": "ShowCritTexts"
+}

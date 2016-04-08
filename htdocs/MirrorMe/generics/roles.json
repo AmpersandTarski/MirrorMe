@@ -1,0 +1,24 @@
+[
+    {
+        "maintains": [
+            "Criterion text parsing - extract VarNames from CritText",
+            "Criterion text parsing - delete parsed CritText",
+            "Criterion text parsing - disassociate VarNames from Criteria",
+            "Variables that are referred to in a Criteria must exist",
+            "Variables that are not mentioned in any Criterion may not exist",
+            "Variables must be associated with every Criterion that mentions them",
+            "Variables that are associated with a Criterion must be referred to by that Criterion",
+            "critShowText - start initialization sequence",
+            "critShowText - re-init cleanup",
+            "critShowText - initialize",
+            "critShowText - request re-init after a value update",
+            "critShowText - Substitute variable name by its value"
+        ],
+        "interfaces": [
+            "Criteria_32_and_32_Variables",
+            "Debug_32_Information"
+        ],
+        "name": "ExecEngine",
+        "id": 0
+    }
+]

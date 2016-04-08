@@ -1,0 +1,320 @@
+[
+    {
+        "signature": "critText[Criterion*CritText]",
+        "sur": false,
+        "mysqlTable": {
+            "tableOf": "src",
+            "srcCol": {
+                "null": false,
+                "unique": true,
+                "name": "Criterion"
+            },
+            "tgtCol": {
+                "null": true,
+                "unique": false,
+                "name": "critText"
+            },
+            "name": "Criterion"
+        },
+        "tot": true,
+        "tgtConcept": "CritText",
+        "inj": false,
+        "name": "critText",
+        "uni": true,
+        "srcConcept": "Criterion",
+        "affectedConjuncts": [
+            "conj_0",
+            "conj_15",
+            "conj_20",
+            "conj_3",
+            "conj_4",
+            "conj_7"
+        ],
+        "prop": false
+    },
+    {
+        "signature": "critShowText[Criterion*CritText]",
+        "sur": false,
+        "mysqlTable": {
+            "tableOf": "src",
+            "srcCol": {
+                "null": false,
+                "unique": true,
+                "name": "Criterion"
+            },
+            "tgtCol": {
+                "null": true,
+                "unique": false,
+                "name": "critShowText"
+            },
+            "name": "Criterion"
+        },
+        "tot": false,
+        "tgtConcept": "CritText",
+        "inj": false,
+        "name": "critShowText",
+        "uni": true,
+        "srcConcept": "Criterion",
+        "affectedConjuncts": [
+            "conj_0",
+            "conj_3",
+            "conj_6"
+        ],
+        "prop": false
+    },
+    {
+        "signature": "varName[Variable*PropertyName]",
+        "sur": false,
+        "mysqlTable": {
+            "tableOf": "src",
+            "srcCol": {
+                "null": false,
+                "unique": true,
+                "name": "Variable"
+            },
+            "tgtCol": {
+                "null": true,
+                "unique": false,
+                "name": "varName"
+            },
+            "name": "Variable"
+        },
+        "tot": true,
+        "tgtConcept": "PropertyName",
+        "inj": false,
+        "name": "varName",
+        "uni": true,
+        "srcConcept": "Variable",
+        "affectedConjuncts": [
+            "conj_13",
+            "conj_16",
+            "conj_17",
+            "conj_18",
+            "conj_21",
+            "conj_8"
+        ],
+        "prop": false
+    },
+    {
+        "signature": "varCrit[Variable*Criterion]",
+        "sur": false,
+        "mysqlTable": {
+            "tableOf": null,
+            "srcCol": {
+                "null": false,
+                "unique": false,
+                "name": "Variable"
+            },
+            "tgtCol": {
+                "null": false,
+                "unique": false,
+                "name": "Criterion"
+            },
+            "name": "varCrit"
+        },
+        "tot": false,
+        "tgtConcept": "Criterion",
+        "inj": false,
+        "name": "varCrit",
+        "uni": false,
+        "srcConcept": "Variable",
+        "affectedConjuncts": [
+            "conj_13",
+            "conj_17",
+            "conj_19",
+            "conj_2"
+        ],
+        "prop": false
+    },
+    {
+        "signature": "varValue[Variable*VarValue]",
+        "sur": false,
+        "mysqlTable": {
+            "tableOf": "src",
+            "srcCol": {
+                "null": false,
+                "unique": true,
+                "name": "Variable"
+            },
+            "tgtCol": {
+                "null": true,
+                "unique": false,
+                "name": "varValue"
+            },
+            "name": "Variable"
+        },
+        "tot": false,
+        "tgtConcept": "VarValue",
+        "inj": false,
+        "name": "varValue",
+        "uni": true,
+        "srcConcept": "Variable",
+        "affectedConjuncts": [
+            "conj_1",
+            "conj_10",
+            "conj_11",
+            "conj_2"
+        ],
+        "prop": false
+    },
+    {
+        "signature": "critParsedText[Criterion*CritText]",
+        "sur": false,
+        "mysqlTable": {
+            "tableOf": "src",
+            "srcCol": {
+                "null": false,
+                "unique": true,
+                "name": "Criterion"
+            },
+            "tgtCol": {
+                "null": true,
+                "unique": false,
+                "name": "critParsedText"
+            },
+            "name": "Criterion"
+        },
+        "tot": false,
+        "tgtConcept": "CritText",
+        "inj": false,
+        "name": "critParsedText",
+        "uni": true,
+        "srcConcept": "Criterion",
+        "affectedConjuncts": [
+            "conj_15",
+            "conj_22",
+            "conj_4",
+            "conj_5"
+        ],
+        "prop": false
+    },
+    {
+        "signature": "critVarNames[Criterion*PropertyName]",
+        "sur": false,
+        "mysqlTable": {
+            "tableOf": null,
+            "srcCol": {
+                "null": false,
+                "unique": false,
+                "name": "Criterion"
+            },
+            "tgtCol": {
+                "null": false,
+                "unique": false,
+                "name": "PropertyName"
+            },
+            "name": "critVarNames"
+        },
+        "tot": false,
+        "tgtConcept": "PropertyName",
+        "inj": false,
+        "name": "critVarNames",
+        "uni": false,
+        "srcConcept": "Criterion",
+        "affectedConjuncts": [
+            "conj_13",
+            "conj_16",
+            "conj_17",
+            "conj_18",
+            "conj_22",
+            "conj_4"
+        ],
+        "prop": false
+    },
+    {
+        "signature": "varShowCrit[Variable*Criterion]",
+        "sur": false,
+        "mysqlTable": {
+            "tableOf": null,
+            "srcCol": {
+                "null": false,
+                "unique": false,
+                "name": "Variable"
+            },
+            "tgtCol": {
+                "null": false,
+                "unique": false,
+                "name": "Criterion"
+            },
+            "name": "varShowCrit"
+        },
+        "tot": false,
+        "tgtConcept": "Criterion",
+        "inj": false,
+        "name": "varShowCrit",
+        "uni": false,
+        "srcConcept": "Variable",
+        "affectedConjuncts": [
+            "conj_0",
+            "conj_1",
+            "conj_19",
+            "conj_2",
+            "conj_23"
+        ],
+        "prop": false
+    },
+    {
+        "signature": "varShowValue[Variable*VarValue]",
+        "sur": false,
+        "mysqlTable": {
+            "tableOf": "src",
+            "srcCol": {
+                "null": false,
+                "unique": true,
+                "name": "Variable"
+            },
+            "tgtCol": {
+                "null": true,
+                "unique": false,
+                "name": "varShowValue"
+            },
+            "name": "Variable"
+        },
+        "tot": false,
+        "tgtConcept": "VarValue",
+        "inj": false,
+        "name": "varShowValue",
+        "uni": true,
+        "srcConcept": "Variable",
+        "affectedConjuncts": [
+            "conj_1",
+            "conj_10",
+            "conj_9"
+        ],
+        "prop": false
+    },
+    {
+        "signature": "critInitReq[Criterion*Criterion]",
+        "sur": false,
+        "mysqlTable": {
+            "tableOf": "src",
+            "srcCol": {
+                "null": false,
+                "unique": true,
+                "name": "Criterion"
+            },
+            "tgtCol": {
+                "null": true,
+                "unique": true,
+                "name": "critInitReq"
+            },
+            "name": "Criterion"
+        },
+        "tot": false,
+        "tgtConcept": "Criterion",
+        "inj": true,
+        "name": "critInitReq",
+        "uni": true,
+        "srcConcept": "Criterion",
+        "affectedConjuncts": [
+            "conj_0",
+            "conj_1",
+            "conj_12",
+            "conj_14",
+            "conj_2",
+            "conj_23",
+            "conj_3"
+        ],
+        "prop": true
+    }
+]

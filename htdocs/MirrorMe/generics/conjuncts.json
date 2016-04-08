@@ -1,0 +1,357 @@
+[
+    {
+        "signalRuleNames": [
+            "critShowText - initialize"
+        ],
+        "normalizationSteps": [
+            "    -(-(critInitReq - varShowCrit~;varShowCrit) \\/ critText;critShowText~)",
+            "<=> { De Morgan }",
+            "    critInitReq - varShowCrit~;varShowCrit /\\ -(critText;critShowText~)",
+            "<=> { Avoid complements, using law x/\\-y = x-y }",
+            "    (critInitReq - varShowCrit~;varShowCrit) - critText;critShowText~"
+        ],
+        "violationsSQL": "/* case: EDif (l,r) (critInitReq - varShowCrit~;varShowCrit) - critText;critShowText~ ([Criterion*Criterion]) */\n /* Optimized case for: <expr1> intersect with the complement of <expr2>.\n where \n   <expr1> = critInitReq - varShowCrit~;varShowCrit ([Criterion*Criterion])\n   <expr2> = critText;critShowText~ ([Criterion*Criterion])\n    critInitReq - varShowCrit~;varShowCrit /\\ -(critText;critShowText~) ([Criterion*Criterion])\n  */\n select\n distinct\n        t1.src as src, t1.tgt as tgt\n from (/* case: EDif (l,r) critInitReq - varShowCrit~;varShowCrit ([Criterion*Criterion]) */\n       /* Optimized case for: <expr1> intersect with the complement of <expr2>.\n where \n   <expr1> = critInitReq ([Criterion*Criterion])\n   <expr2> = varShowCrit~;varShowCrit ([Criterion*Criterion])\n    critInitReq /\\ -(varShowCrit~;varShowCrit) ([Criterion*Criterion])\n  */\n       select\n       distinct\n              t1.src as src, t1.tgt as tgt\n       from (select\n             distinct\n                    \"Criterion\" as src, \"critInitReq\" as tgt\n             from \"Criterion\"\n             where \"Criterion\" IS NOT NULL AND \"critInitReq\" IS NOT NULL)\n            as t1\n            left\n            join (/* case: (ECps es), with two or more elements in es.varShowCrit~;varShowCrit */\n                  select\n                  distinct\n                         fence0.src as src, fence1.tgt as tgt\n                  from (/* Flipped: EDcD varShowCrit[Variable*Criterion] */\n                        select\n                        distinct\n                               \"Criterion\" as src, \"Variable\" as tgt\n                        from \"varShowCrit\")\n                       as fence0,\n                       (select\n                        distinct\n                               \"Variable\" as src, \"Criterion\" as tgt\n                        from \"varShowCrit\")\n                       as fence1\n                  where fence0.tgt = fence1.src)\n                 as t2\n            on t1.src = t2.src AND t1.tgt = t2.tgt\n       where t2.src IS NULL OR t2.tgt IS NULL)\n      as t1\n      left\n      join (/* case: (ECps es), with two or more elements in es.critText;critShowText~ */\n            select\n            distinct\n                   fence0.src as src, fence1.tgt as tgt\n            from (select\n                  distinct\n                         \"Criterion\" as src, \"critText\" as tgt\n                  from \"Criterion\"\n                  where \"Criterion\" IS NOT NULL AND \"critText\" IS NOT NULL)\n                 as fence0,\n                 (/* Flipped: EDcD critShowText[Criterion*CritText] */\n                  select\n                  distinct\n                         \"critShowText\" as src, \"Criterion\" as tgt\n                  from \"Criterion\"\n                  where \"Criterion\" IS NOT NULL AND \"critShowText\" IS NOT NULL)\n                 as fence1\n            where fence0.tgt = fence1.src)\n           as t2\n      on t1.src = t2.src AND t1.tgt = t2.tgt\n where t2.src IS NULL OR t2.tgt IS NULL",
+        "invariantRuleNames": [],
+        "id": "conj_0"
+    },
+    {
+        "signalRuleNames": [
+            "critShowText - request re-init after a value update"
+        ],
+        "normalizationSteps": [
+            "    -(-((I[Variable] /\\ (varShowValue;-I[VarValue];varValue~ \\/ -(varValue;varValue~)));varShowCrit) \\/ varShowCrit;critInitReq)",
+            "<=> { De Morgan }",
+            "    (I[Variable] /\\ (varShowValue;-I[VarValue];varValue~ \\/ -(varValue;varValue~)));varShowCrit /\\ -(varShowCrit;critInitReq)",
+            "<=> { distribute /\\ over \\/ }",
+            "    ((I[Variable] /\\ varShowValue;-I[VarValue];varValue~) \\/ (I[Variable] /\\ -(varValue;varValue~)));varShowCrit /\\ -(varShowCrit;critInitReq)",
+            "<=> { distribute ; over \\/ }",
+            "    ((I[Variable] /\\ varShowValue;-I[VarValue];varValue~);varShowCrit \\/ (I[Variable] /\\ -(varValue;varValue~));varShowCrit) /\\ -(varShowCrit;critInitReq)",
+            "<=> { distribute /\\ over \\/ }",
+            "    ((I[Variable] /\\ varShowValue;-I[VarValue];varValue~);varShowCrit /\\ -(varShowCrit;critInitReq)) \\/ ((I[Variable] /\\ -(varValue;varValue~));varShowCrit /\\ -(varShowCrit;critInitReq))",
+            "<=> { Avoid complements, using law x/\\-y = x-y and Avoid complements, using law x/\\-y = x-y }",
+            "    (I[Variable] /\\ varShowValue;-I[VarValue];varValue~);varShowCrit - varShowCrit;critInitReq \\/ ((I[Variable] - varValue;varValue~);varShowCrit /\\ -(varShowCrit;critInitReq))",
+            "<=> { Avoid complements, using law x/\\-y = x-y }",
+            "    (I[Variable] /\\ varShowValue;-I[VarValue];varValue~);varShowCrit - varShowCrit;critInitReq \\/ (I[Variable] - varValue;varValue~);varShowCrit - varShowCrit;critInitReq"
+        ],
+        "violationsSQL": "/* case: EUni (l,r)(I[Variable] /\\ varShowValue;-I[VarValue];varValue~);varShowCrit - varShowCrit;critInitReq \\/ (I[Variable] - varValue;varValue~);varShowCrit - varShowCrit;critInitReq ([Variable*Criterion]) */\n /* case: EDif (l,r) (I[Variable] /\\ varShowValue;-I[VarValue];varValue~);varShowCrit - varShowCrit;critInitReq ([Variable*Criterion]) */\n /* Optimized case for: <expr1> intersect with the complement of <expr2>.\n where \n   <expr1> = (I[Variable] /\\ varShowValue;-I[VarValue];varValue~);varShowCrit ([Variable*Criterion])\n   <expr2> = varShowCrit;critInitReq ([Variable*Criterion])\n    (I[Variable] /\\ varShowValue;-I[VarValue];varValue~);varShowCrit /\\ -(varShowCrit;critInitReq) ([Variable*Criterion])\n  */\n select\n distinct\n        t1.src as src, t1.tgt as tgt\n from (/* case: (ECps es), with two or more elements in es.(I[Variable] /\\ varShowValue;-I[VarValue];varValue~);varShowCrit */\n       select\n       distinct\n              fence0.src as src, fence1.tgt as tgt\n       from (/* case: (EIsc I[Variable] /\\ varShowValue;-I[VarValue];varValue~ ([Variable*Variable])\n EDcI Variable\n ECps (EDcD varShowValue[Variable*VarValue],ECps (ECpl (EDcI VarValue),EFlp (EDcD varValue[Variable*VarValue])))\n  */\n             select\n             distinct\n                    src as src, tgt as tgt\n             from (/* `intersect` does not work in MySQL, so this statement is generated: */\n                   select\n                   distinct\n                          subIntersect0.src as src, subIntersect0.tgt as tgt\n                   from (/* I[Variable] */\n                         select\n                         distinct\n                                \"Variable\" as src, \"Variable\" as tgt\n                         from \"Variable\"\n                         where \"Variable\" IS NOT NULL)\n                        as subIntersect0,\n                        (/* case: (ECps es), with two or more elements in es.varShowValue;-I[VarValue];varValue~ */\n                         select\n                         distinct\n                                fence0.src as src, fence2.tgt as tgt\n                         from (select\n                               distinct\n                                      \"Variable\" as src, \"varShowValue\" as tgt\n                               from \"Variable\"\n                               where \"Variable\" IS NOT NULL AND \"varShowValue\" IS NOT NULL)\n                              as fence0,\n                              (/* case: ECpl (EDcI VarValue) */\n                               select\n                               distinct\n                                      \"concept0\".\"VarValue\" as src, \"concept1\".\"VarValue\" as tgt\n                               from \"VarValue\" as \"concept0\",\n                                    \"VarValue\" as \"concept1\"\n                               where \"concept0\".\"VarValue\" <> \"concept1\".\"VarValue\")\n                              as fence1,\n                              (/* Flipped: EDcD varValue[Variable*VarValue] */\n                               select\n                               distinct\n                                      \"varValue\" as src, \"Variable\" as tgt\n                               from \"Variable\"\n                               where \"Variable\" IS NOT NULL AND \"varValue\" IS NOT NULL)\n                              as fence2\n                         where fence0.tgt = fence1.src AND fence1.tgt = fence2.src)\n                        as subIntersect1\n                   where subIntersect1.src = subIntersect0.src AND subIntersect1.tgt = subIntersect0.tgt)\n                  as someDummyNameBecauseMySQLNeedsOne)\n            as fence0,\n            (select\n             distinct\n                    \"Variable\" as src, \"Criterion\" as tgt\n             from \"varShowCrit\")\n            as fence1\n       where fence0.tgt = fence1.src)\n      as t1\n      left\n      join (/* case: (ECps es), with two or more elements in es.varShowCrit;critInitReq */\n            select\n            distinct\n                   fence0.src as src, fence1.tgt as tgt\n            from (select\n                  distinct\n                         \"Variable\" as src, \"Criterion\" as tgt\n                  from \"varShowCrit\")\n                 as fence0,\n                 (select\n                  distinct\n                         \"Criterion\" as src, \"critInitReq\" as tgt\n                  from \"Criterion\"\n                  where \"Criterion\" IS NOT NULL AND \"critInitReq\" IS NOT NULL)\n                 as fence1\n            where fence0.tgt = fence1.src)\n           as t2\n      on t1.src = t2.src AND t1.tgt = t2.tgt\n where t2.src IS NULL OR t2.tgt IS NULL\n union\n /* case: EDif (l,r) (I[Variable] - varValue;varValue~);varShowCrit - varShowCrit;critInitReq ([Variable*Criterion]) */\n /* Optimized case for: <expr1> intersect with the complement of <expr2>.\n where \n   <expr1> = (I[Variable] - varValue;varValue~);varShowCrit ([Variable*Criterion])\n   <expr2> = varShowCrit;critInitReq ([Variable*Criterion])\n    (I[Variable] - varValue;varValue~);varShowCrit /\\ -(varShowCrit;critInitReq) ([Variable*Criterion])\n  */\n select\n distinct\n        t1.src as src, t1.tgt as tgt\n from (/* case: (ECps es), with two or more elements in es.(I[Variable] - varValue;varValue~);varShowCrit */\n       select\n       distinct\n              fence0.src as src, fence1.tgt as tgt\n       from (/* case: EDif (l,r) I[Variable] - varValue;varValue~ ([Variable*Variable]) */\n             /* Optimized case for: varValue[Variable*VarValue] [TOT]. */\n             /*    I[Variable] /\\ -(varValue;varValue~) ([Variable*Variable]) */\n             select\n             distinct\n                    \"Variable\" as src, \"Variable\" as tgt\n             from \"Variable\" as notIns\n             where \"Variable\" not in (select src\n                                      from (select\n                                            distinct\n                                                   \"Variable\" as src, \"varValue\" as tgt\n                                            from \"Variable\"\n                                            where \"Variable\" IS NOT NULL AND \"varValue\" IS NOT NULL)\n                                           as src) AND \"Variable\" IS NOT NULL)\n            as fence0,\n            (select\n             distinct\n                    \"Variable\" as src, \"Criterion\" as tgt\n             from \"varShowCrit\")\n            as fence1\n       where fence0.tgt = fence1.src)\n      as t1\n      left\n      join (/* case: (ECps es), with two or more elements in es.varShowCrit;critInitReq */\n            select\n            distinct\n                   fence0.src as src, fence1.tgt as tgt\n            from (select\n                  distinct\n                         \"Variable\" as src, \"Criterion\" as tgt\n                  from \"varShowCrit\")\n                 as fence0,\n                 (select\n                  distinct\n                         \"Criterion\" as src, \"critInitReq\" as tgt\n                  from \"Criterion\"\n                  where \"Criterion\" IS NOT NULL AND \"critInitReq\" IS NOT NULL)\n                 as fence1\n            where fence0.tgt = fence1.src)\n           as t2\n      on t1.src = t2.src AND t1.tgt = t2.tgt\n where t2.src IS NULL OR t2.tgt IS NULL",
+        "invariantRuleNames": [],
+        "id": "conj_1"
+    },
+    {
+        "signalRuleNames": [
+            "critShowText - Substitute variable name by its value"
+        ],
+        "normalizationSteps": [
+            "    -(-((I[Variable] /\\ varValue;varValue~);varCrit;(I[Criterion] - critInitReq)) \\/ varShowCrit)",
+            "<=> { De Morgan }",
+            "    (I[Variable] /\\ varValue;varValue~);varCrit;(I[Criterion] - critInitReq) /\\ -varShowCrit",
+            "<=> { Avoid complements, using law x/\\-y = x-y }",
+            "    (I[Variable] /\\ varValue;varValue~);varCrit;(I[Criterion] - critInitReq) - varShowCrit"
+        ],
+        "violationsSQL": "/* case: EDif (l,r) (I[Variable] /\\ varValue;varValue~);varCrit;(I[Criterion] - critInitReq) - varShowCrit ([Variable*Criterion]) */\n /* Optimized case for: <expr1> intersect with the complement of <expr2>.\n where \n   <expr1> = (I[Variable] /\\ varValue;varValue~);varCrit;(I[Criterion] - critInitReq) ([Variable*Criterion])\n   <expr2> = varShowCrit ([Variable*Criterion])\n    (I[Variable] /\\ varValue;varValue~);varCrit;(I[Criterion] - critInitReq) /\\ -varShowCrit ([Variable*Criterion])\n  */\n select\n distinct\n        t1.src as src, t1.tgt as tgt\n from (/* case: (ECps es), with two or more elements in es.(I[Variable] /\\ varValue;varValue~);varCrit;(I[Criterion] - critInitReq) */\n       select\n       distinct\n              fence0.src as src, fence2.tgt as tgt\n       from (/* case: (EIsc I[Variable] /\\ varValue;varValue~ ([Variable*Variable])\n EDcI Variable\n ECps (EDcD varValue[Variable*VarValue],EFlp (EDcD varValue[Variable*VarValue]))\n  */\n             select\n             distinct\n                    src as src, tgt as tgt\n             from (/* `intersect` does not work in MySQL, so this statement is generated: */\n                   select\n                   distinct\n                          subIntersect0.src as src, subIntersect0.tgt as tgt\n                   from (/* I[Variable] */\n                         select\n                         distinct\n                                \"Variable\" as src, \"Variable\" as tgt\n                         from \"Variable\"\n                         where \"Variable\" IS NOT NULL)\n                        as subIntersect0,\n                        (/* case: (ECps es), with two or more elements in es.varValue;varValue~ */\n                         select\n                         distinct\n                                fence0.src as src, fence1.tgt as tgt\n                         from (select\n                               distinct\n                                      \"Variable\" as src, \"varValue\" as tgt\n                               from \"Variable\"\n                               where \"Variable\" IS NOT NULL AND \"varValue\" IS NOT NULL)\n                              as fence0,\n                              (/* Flipped: EDcD varValue[Variable*VarValue] */\n                               select\n                               distinct\n                                      \"varValue\" as src, \"Variable\" as tgt\n                               from \"Variable\"\n                               where \"Variable\" IS NOT NULL AND \"varValue\" IS NOT NULL)\n                              as fence1\n                         where fence0.tgt = fence1.src)\n                        as subIntersect1\n                   where subIntersect1.src = subIntersect0.src AND subIntersect1.tgt = subIntersect0.tgt)\n                  as someDummyNameBecauseMySQLNeedsOne)\n            as fence0,\n            (select\n             distinct\n                    \"Variable\" as src, \"Criterion\" as tgt\n             from \"varCrit\")\n            as fence1,\n            (/* case: EDif (l,r) I[Criterion] - critInitReq ([Criterion*Criterion]) */\n             /* Optimized case for: <expr1> intersect with the complement of <expr2>.\n where \n   <expr1> = I[Criterion] ([Criterion*Criterion])\n   <expr2> = critInitReq ([Criterion*Criterion])\n    I[Criterion] /\\ -critInitReq ([Criterion*Criterion])\n  */\n             select\n             distinct\n                    t1.src as src, t1.tgt as tgt\n             from (/* I[Criterion] */\n                   select\n                   distinct\n                          \"Criterion\" as src, \"Criterion\" as tgt\n                   from \"Criterion\"\n                   where \"Criterion\" IS NOT NULL)\n                  as t1\n                  left join (select\n                             distinct\n                                    \"Criterion\" as src, \"critInitReq\" as tgt\n                             from \"Criterion\"\n                             where \"Criterion\" IS NOT NULL AND \"critInitReq\" IS NOT NULL)\n                            as t2\n                  on t1.src = t2.src AND t1.tgt = t2.tgt\n             where t2.src IS NULL OR t2.tgt IS NULL)\n            as fence2\n       where fence0.tgt = fence1.src AND fence1.tgt = fence2.src)\n      as t1\n      left join (select\n                 distinct\n                        \"Variable\" as src, \"Criterion\" as tgt\n                 from \"varShowCrit\")\n                as t2\n      on t1.src = t2.src AND t1.tgt = t2.tgt\n where t2.src IS NULL OR t2.tgt IS NULL",
+        "invariantRuleNames": [],
+        "id": "conj_2"
+    },
+    {
+        "signalRuleNames": [
+            "critShowText - start initialization sequence"
+        ],
+        "normalizationSteps": [
+            "    -(-((I[Criterion] - critShowText;critShowText~);critText) \\/ critInitReq;critText)",
+            "<=> { De Morgan }",
+            "    (I[Criterion] - critShowText;critShowText~);critText /\\ -(critInitReq;critText)",
+            "<=> { Avoid complements, using law x/\\-y = x-y }",
+            "    (I[Criterion] - critShowText;critShowText~);critText - critInitReq;critText"
+        ],
+        "violationsSQL": "/* case: EDif (l,r) (I[Criterion] - critShowText;critShowText~);critText - critInitReq;critText ([Criterion*CritText]) */\n /* Optimized case for: <expr1> intersect with the complement of <expr2>.\n where \n   <expr1> = (I[Criterion] - critShowText;critShowText~);critText ([Criterion*CritText])\n   <expr2> = critInitReq;critText ([Criterion*CritText])\n    (I[Criterion] - critShowText;critShowText~);critText /\\ -(critInitReq;critText) ([Criterion*CritText])\n  */\n select\n distinct\n        t1.src as src, t1.tgt as tgt\n from (/* case: (ECps es), with two or more elements in es.(I[Criterion] - critShowText;critShowText~);critText */\n       select\n       distinct\n              fence0.src as src, fence1.tgt as tgt\n       from (/* case: EDif (l,r) I[Criterion] - critShowText;critShowText~ ([Criterion*Criterion]) */\n             /* Optimized case for: <expr1> intersect with the complement of <expr2>.\n where \n   <expr1> = I[Criterion] ([Criterion*Criterion])\n   <expr2> = critShowText;critShowText~ ([Criterion*Criterion])\n    I[Criterion] /\\ -(critShowText;critShowText~) ([Criterion*Criterion])\n  */\n             select\n             distinct\n                    t1.src as src, t1.tgt as tgt\n             from (/* I[Criterion] */\n                   select\n                   distinct\n                          \"Criterion\" as src, \"Criterion\" as tgt\n                   from \"Criterion\"\n                   where \"Criterion\" IS NOT NULL)\n                  as t1\n                  left\n                  join (/* case: (ECps es), with two or more elements in es.critShowText;critShowText~ */\n                        select\n                        distinct\n                               fence0.src as src, fence1.tgt as tgt\n                        from (select\n                              distinct\n                                     \"Criterion\" as src, \"critShowText\" as tgt\n                              from \"Criterion\"\n                              where \"Criterion\" IS NOT NULL AND \"critShowText\" IS NOT NULL)\n                             as fence0,\n                             (/* Flipped: EDcD critShowText[Criterion*CritText] */\n                              select\n                              distinct\n                                     \"critShowText\" as src, \"Criterion\" as tgt\n                              from \"Criterion\"\n                              where \"Criterion\" IS NOT NULL AND \"critShowText\" IS NOT NULL)\n                             as fence1\n                        where fence0.tgt = fence1.src)\n                       as t2\n                  on t1.src = t2.src AND t1.tgt = t2.tgt\n             where t2.src IS NULL OR t2.tgt IS NULL)\n            as fence0,\n            (select\n             distinct\n                    \"Criterion\" as src, \"critText\" as tgt\n             from \"Criterion\"\n             where \"Criterion\" IS NOT NULL AND \"critText\" IS NOT NULL)\n            as fence1\n       where fence0.tgt = fence1.src)\n      as t1\n      left\n      join (/* case: (ECps es), with two or more elements in es.critInitReq;critText */\n            select\n            distinct\n                   fence0.src as src, fence1.tgt as tgt\n            from (select\n                  distinct\n                         \"Criterion\" as src, \"critInitReq\" as tgt\n                  from \"Criterion\"\n                  where \"Criterion\" IS NOT NULL AND \"critInitReq\" IS NOT NULL)\n                 as fence0,\n                 (select\n                  distinct\n                         \"Criterion\" as src, \"critText\" as tgt\n                  from \"Criterion\"\n                  where \"Criterion\" IS NOT NULL AND \"critText\" IS NOT NULL)\n                 as fence1\n            where fence0.tgt = fence1.src)\n           as t2\n      on t1.src = t2.src AND t1.tgt = t2.tgt\n where t2.src IS NULL OR t2.tgt IS NULL",
+        "invariantRuleNames": [],
+        "id": "conj_3"
+    },
+    {
+        "signalRuleNames": [
+            "Criterion text parsing - extract VarNames from CritText"
+        ],
+        "normalizationSteps": [
+            "    -(-((I[Criterion] - critVarNames;critVarNames~);critText) \\/ critParsedText)",
+            "<=> { De Morgan }",
+            "    (I[Criterion] - critVarNames;critVarNames~);critText /\\ -critParsedText",
+            "<=> { Avoid complements, using law x/\\-y = x-y }",
+            "    (I[Criterion] - critVarNames;critVarNames~);critText - critParsedText"
+        ],
+        "violationsSQL": "/* case: EDif (l,r) (I[Criterion] - critVarNames;critVarNames~);critText - critParsedText ([Criterion*CritText]) */\n /* Optimized case for: <expr1> intersect with the complement of <expr2>.\n where \n   <expr1> = (I[Criterion] - critVarNames;critVarNames~);critText ([Criterion*CritText])\n   <expr2> = critParsedText ([Criterion*CritText])\n    (I[Criterion] - critVarNames;critVarNames~);critText /\\ -critParsedText ([Criterion*CritText])\n  */\n select\n distinct\n        t1.src as src, t1.tgt as tgt\n from (/* case: (ECps es), with two or more elements in es.(I[Criterion] - critVarNames;critVarNames~);critText */\n       select\n       distinct\n              fence0.src as src, fence1.tgt as tgt\n       from (/* case: EDif (l,r) I[Criterion] - critVarNames;critVarNames~ ([Criterion*Criterion]) */\n             /* Optimized case for: <expr1> intersect with the complement of <expr2>.\n where \n   <expr1> = I[Criterion] ([Criterion*Criterion])\n   <expr2> = critVarNames;critVarNames~ ([Criterion*Criterion])\n    I[Criterion] /\\ -(critVarNames;critVarNames~) ([Criterion*Criterion])\n  */\n             select\n             distinct\n                    t1.src as src, t1.tgt as tgt\n             from (/* I[Criterion] */\n                   select\n                   distinct\n                          \"Criterion\" as src, \"Criterion\" as tgt\n                   from \"Criterion\"\n                   where \"Criterion\" IS NOT NULL)\n                  as t1\n                  left\n                  join (/* case: (ECps es), with two or more elements in es.critVarNames;critVarNames~ */\n                        select\n                        distinct\n                               fence0.src as src, fence1.tgt as tgt\n                        from (select\n                              distinct\n                                     \"Criterion\" as src, \"PropertyName\" as tgt\n                              from \"critVarNames\")\n                             as fence0,\n                             (/* Flipped: EDcD critVarNames[Criterion*PropertyName] */\n                              select\n                              distinct\n                                     \"PropertyName\" as src, \"Criterion\" as tgt\n                              from \"critVarNames\")\n                             as fence1\n                        where fence0.tgt = fence1.src)\n                       as t2\n                  on t1.src = t2.src AND t1.tgt = t2.tgt\n             where t2.src IS NULL OR t2.tgt IS NULL)\n            as fence0,\n            (select\n             distinct\n                    \"Criterion\" as src, \"critText\" as tgt\n             from \"Criterion\"\n             where \"Criterion\" IS NOT NULL AND \"critText\" IS NOT NULL)\n            as fence1\n       where fence0.tgt = fence1.src)\n      as t1\n      left join (select\n                 distinct\n                        \"Criterion\" as src, \"critParsedText\" as tgt\n                 from \"Criterion\"\n                 where \"Criterion\" IS NOT NULL AND \"critParsedText\" IS NOT NULL)\n                as t2\n      on t1.src = t2.src AND t1.tgt = t2.tgt\n where t2.src IS NULL OR t2.tgt IS NULL",
+        "invariantRuleNames": [],
+        "id": "conj_4"
+    },
+    {
+        "signalRuleNames": [],
+        "normalizationSteps": [
+            "    -(-(critParsedText~;critParsedText) \\/ I[CritText])",
+            "<=> { De Morgan }",
+            "    critParsedText~;critParsedText /\\ -I[CritText]",
+            "<=> { Avoid complements, using law x/\\-y = x-y }",
+            "    critParsedText~;critParsedText - I[CritText]"
+        ],
+        "violationsSQL": "/* case: EDif (l,r) critParsedText~;critParsedText - I[CritText] ([CritText*CritText]) */\n /* Optimized case for: <expr1> intersect with the complement of <expr2>.\n where \n   <expr1> = critParsedText~;critParsedText ([CritText*CritText])\n   <expr2> = I[CritText] ([CritText*CritText])\n    critParsedText~;critParsedText /\\ -I[CritText] ([CritText*CritText])\n  */\n select\n distinct\n        t1.src as src, t1.tgt as tgt\n from (/* case: (ECps es), with two or more elements in es.critParsedText~;critParsedText */\n       select\n       distinct\n              fence0.src as src, fence1.tgt as tgt\n       from (/* Flipped: EDcD critParsedText[Criterion*CritText] */\n             select\n             distinct\n                    \"critParsedText\" as src, \"Criterion\" as tgt\n             from \"Criterion\"\n             where \"Criterion\" IS NOT NULL AND \"critParsedText\" IS NOT NULL)\n            as fence0,\n            (select\n             distinct\n                    \"Criterion\" as src, \"critParsedText\" as tgt\n             from \"Criterion\"\n             where \"Criterion\" IS NOT NULL AND \"critParsedText\" IS NOT NULL)\n            as fence1\n       where fence0.tgt = fence1.src)\n      as t1\n      left join (/* I[CritText] */\n                 select\n                 distinct\n                        \"CritText\" as src, \"CritText\" as tgt\n                 from \"CritText\"\n                 where \"CritText\" IS NOT NULL)\n                as t2\n      on t1.src = t2.src AND t1.tgt = t2.tgt\n where t2.src IS NULL OR t2.tgt IS NULL",
+        "invariantRuleNames": [],
+        "id": "conj_5"
+    },
+    {
+        "signalRuleNames": [],
+        "normalizationSteps": [
+            "    -(-(critShowText~;critShowText) \\/ I[CritText])",
+            "<=> { De Morgan }",
+            "    critShowText~;critShowText /\\ -I[CritText]",
+            "<=> { Avoid complements, using law x/\\-y = x-y }",
+            "    critShowText~;critShowText - I[CritText]"
+        ],
+        "violationsSQL": "/* case: EDif (l,r) critShowText~;critShowText - I[CritText] ([CritText*CritText]) */\n /* Optimized case for: <expr1> intersect with the complement of <expr2>.\n where \n   <expr1> = critShowText~;critShowText ([CritText*CritText])\n   <expr2> = I[CritText] ([CritText*CritText])\n    critShowText~;critShowText /\\ -I[CritText] ([CritText*CritText])\n  */\n select\n distinct\n        t1.src as src, t1.tgt as tgt\n from (/* case: (ECps es), with two or more elements in es.critShowText~;critShowText */\n       select\n       distinct\n              fence0.src as src, fence1.tgt as tgt\n       from (/* Flipped: EDcD critShowText[Criterion*CritText] */\n             select\n             distinct\n                    \"critShowText\" as src, \"Criterion\" as tgt\n             from \"Criterion\"\n             where \"Criterion\" IS NOT NULL AND \"critShowText\" IS NOT NULL)\n            as fence0,\n            (select\n             distinct\n                    \"Criterion\" as src, \"critShowText\" as tgt\n             from \"Criterion\"\n             where \"Criterion\" IS NOT NULL AND \"critShowText\" IS NOT NULL)\n            as fence1\n       where fence0.tgt = fence1.src)\n      as t1\n      left join (/* I[CritText] */\n                 select\n                 distinct\n                        \"CritText\" as src, \"CritText\" as tgt\n                 from \"CritText\"\n                 where \"CritText\" IS NOT NULL)\n                as t2\n      on t1.src = t2.src AND t1.tgt = t2.tgt\n where t2.src IS NULL OR t2.tgt IS NULL",
+        "invariantRuleNames": [],
+        "id": "conj_6"
+    },
+    {
+        "signalRuleNames": [],
+        "normalizationSteps": [
+            "    -(-(critText~;critText) \\/ I[CritText])",
+            "<=> { De Morgan }",
+            "    critText~;critText /\\ -I[CritText]",
+            "<=> { Avoid complements, using law x/\\-y = x-y }",
+            "    critText~;critText - I[CritText]"
+        ],
+        "violationsSQL": "/* case: EDif (l,r) critText~;critText - I[CritText] ([CritText*CritText]) */\n /* Optimized case for: <expr1> intersect with the complement of <expr2>.\n where \n   <expr1> = critText~;critText ([CritText*CritText])\n   <expr2> = I[CritText] ([CritText*CritText])\n    critText~;critText /\\ -I[CritText] ([CritText*CritText])\n  */\n select\n distinct\n        t1.src as src, t1.tgt as tgt\n from (/* case: (ECps es), with two or more elements in es.critText~;critText */\n       select\n       distinct\n              fence0.src as src, fence1.tgt as tgt\n       from (/* Flipped: EDcD critText[Criterion*CritText] */\n             select\n             distinct\n                    \"critText\" as src, \"Criterion\" as tgt\n             from \"Criterion\"\n             where \"Criterion\" IS NOT NULL AND \"critText\" IS NOT NULL)\n            as fence0,\n            (select\n             distinct\n                    \"Criterion\" as src, \"critText\" as tgt\n             from \"Criterion\"\n             where \"Criterion\" IS NOT NULL AND \"critText\" IS NOT NULL)\n            as fence1\n       where fence0.tgt = fence1.src)\n      as t1\n      left join (/* I[CritText] */\n                 select\n                 distinct\n                        \"CritText\" as src, \"CritText\" as tgt\n                 from \"CritText\"\n                 where \"CritText\" IS NOT NULL)\n                as t2\n      on t1.src = t2.src AND t1.tgt = t2.tgt\n where t2.src IS NULL OR t2.tgt IS NULL",
+        "invariantRuleNames": [],
+        "id": "conj_7"
+    },
+    {
+        "signalRuleNames": [],
+        "normalizationSteps": [
+            "    -(-(varName~;varName) \\/ I[PropertyName])",
+            "<=> { De Morgan }",
+            "    varName~;varName /\\ -I[PropertyName]",
+            "<=> { Avoid complements, using law x/\\-y = x-y }",
+            "    varName~;varName - I[PropertyName]"
+        ],
+        "violationsSQL": "/* case: EDif (l,r) varName~;varName - I[PropertyName] ([PropertyName*PropertyName]) */\n /* Optimized case for: <expr1> intersect with the complement of <expr2>.\n where \n   <expr1> = varName~;varName ([PropertyName*PropertyName])\n   <expr2> = I[PropertyName] ([PropertyName*PropertyName])\n    varName~;varName /\\ -I[PropertyName] ([PropertyName*PropertyName])\n  */\n select\n distinct\n        t1.src as src, t1.tgt as tgt\n from (/* case: (ECps es), with two or more elements in es.varName~;varName */\n       select\n       distinct\n              fence0.src as src, fence1.tgt as tgt\n       from (/* Flipped: EDcD varName[Variable*PropertyName] */\n             select\n             distinct\n                    \"varName\" as src, \"Variable\" as tgt\n             from \"Variable\"\n             where \"Variable\" IS NOT NULL AND \"varName\" IS NOT NULL)\n            as fence0,\n            (select\n             distinct\n                    \"Variable\" as src, \"varName\" as tgt\n             from \"Variable\"\n             where \"Variable\" IS NOT NULL AND \"varName\" IS NOT NULL)\n            as fence1\n       where fence0.tgt = fence1.src)\n      as t1\n      left join (/* I[PropertyName] */\n                 select\n                 distinct\n                        \"PropertyName\" as src, \"PropertyName\" as tgt\n                 from \"PropertyName\"\n                 where \"PropertyName\" IS NOT NULL)\n                as t2\n      on t1.src = t2.src AND t1.tgt = t2.tgt\n where t2.src IS NULL OR t2.tgt IS NULL",
+        "invariantRuleNames": [],
+        "id": "conj_8"
+    },
+    {
+        "signalRuleNames": [],
+        "normalizationSteps": [
+            "    -(-(varShowValue~;varShowValue) \\/ I[VarValue])",
+            "<=> { De Morgan }",
+            "    varShowValue~;varShowValue /\\ -I[VarValue]",
+            "<=> { Avoid complements, using law x/\\-y = x-y }",
+            "    varShowValue~;varShowValue - I[VarValue]"
+        ],
+        "violationsSQL": "/* case: EDif (l,r) varShowValue~;varShowValue - I[VarValue] ([VarValue*VarValue]) */\n /* Optimized case for: <expr1> intersect with the complement of <expr2>.\n where \n   <expr1> = varShowValue~;varShowValue ([VarValue*VarValue])\n   <expr2> = I[VarValue] ([VarValue*VarValue])\n    varShowValue~;varShowValue /\\ -I[VarValue] ([VarValue*VarValue])\n  */\n select\n distinct\n        t1.src as src, t1.tgt as tgt\n from (/* case: (ECps es), with two or more elements in es.varShowValue~;varShowValue */\n       select\n       distinct\n              fence0.src as src, fence1.tgt as tgt\n       from (/* Flipped: EDcD varShowValue[Variable*VarValue] */\n             select\n             distinct\n                    \"varShowValue\" as src, \"Variable\" as tgt\n             from \"Variable\"\n             where \"Variable\" IS NOT NULL AND \"varShowValue\" IS NOT NULL)\n            as fence0,\n            (select\n             distinct\n                    \"Variable\" as src, \"varShowValue\" as tgt\n             from \"Variable\"\n             where \"Variable\" IS NOT NULL AND \"varShowValue\" IS NOT NULL)\n            as fence1\n       where fence0.tgt = fence1.src)\n      as t1\n      left join (/* I[VarValue] */\n                 select\n                 distinct\n                        \"VarValue\" as src, \"VarValue\" as tgt\n                 from \"VarValue\"\n                 where \"VarValue\" IS NOT NULL)\n                as t2\n      on t1.src = t2.src AND t1.tgt = t2.tgt\n where t2.src IS NULL OR t2.tgt IS NULL",
+        "invariantRuleNames": [],
+        "id": "conj_9"
+    },
+    {
+        "signalRuleNames": [],
+        "normalizationSteps": [
+            "    -(-(varShowValue~;varValue) \\/ I[VarValue])",
+            "<=> { De Morgan }",
+            "    varShowValue~;varValue /\\ -I[VarValue]",
+            "<=> { Avoid complements, using law x/\\-y = x-y }",
+            "    varShowValue~;varValue - I[VarValue]"
+        ],
+        "violationsSQL": "/* case: EDif (l,r) varShowValue~;varValue - I[VarValue] ([VarValue*VarValue]) */\n /* Optimized case for: <expr1> intersect with the complement of <expr2>.\n where \n   <expr1> = varShowValue~;varValue ([VarValue*VarValue])\n   <expr2> = I[VarValue] ([VarValue*VarValue])\n    varShowValue~;varValue /\\ -I[VarValue] ([VarValue*VarValue])\n  */\n select\n distinct\n        t1.src as src, t1.tgt as tgt\n from (/* case: (ECps es), with two or more elements in es.varShowValue~;varValue */\n       select\n       distinct\n              fence0.src as src, fence1.tgt as tgt\n       from (/* Flipped: EDcD varShowValue[Variable*VarValue] */\n             select\n             distinct\n                    \"varShowValue\" as src, \"Variable\" as tgt\n             from \"Variable\"\n             where \"Variable\" IS NOT NULL AND \"varShowValue\" IS NOT NULL)\n            as fence0,\n            (select\n             distinct\n                    \"Variable\" as src, \"varValue\" as tgt\n             from \"Variable\"\n             where \"Variable\" IS NOT NULL AND \"varValue\" IS NOT NULL)\n            as fence1\n       where fence0.tgt = fence1.src)\n      as t1\n      left join (/* I[VarValue] */\n                 select\n                 distinct\n                        \"VarValue\" as src, \"VarValue\" as tgt\n                 from \"VarValue\"\n                 where \"VarValue\" IS NOT NULL)\n                as t2\n      on t1.src = t2.src AND t1.tgt = t2.tgt\n where t2.src IS NULL OR t2.tgt IS NULL",
+        "invariantRuleNames": [
+            "varShowValue integrity"
+        ],
+        "id": "conj_10"
+    },
+    {
+        "signalRuleNames": [],
+        "normalizationSteps": [
+            "    -(-(varValue~;varValue) \\/ I[VarValue])",
+            "<=> { De Morgan }",
+            "    varValue~;varValue /\\ -I[VarValue]",
+            "<=> { Avoid complements, using law x/\\-y = x-y }",
+            "    varValue~;varValue - I[VarValue]"
+        ],
+        "violationsSQL": "/* case: EDif (l,r) varValue~;varValue - I[VarValue] ([VarValue*VarValue]) */\n /* Optimized case for: <expr1> intersect with the complement of <expr2>.\n where \n   <expr1> = varValue~;varValue ([VarValue*VarValue])\n   <expr2> = I[VarValue] ([VarValue*VarValue])\n    varValue~;varValue /\\ -I[VarValue] ([VarValue*VarValue])\n  */\n select\n distinct\n        t1.src as src, t1.tgt as tgt\n from (/* case: (ECps es), with two or more elements in es.varValue~;varValue */\n       select\n       distinct\n              fence0.src as src, fence1.tgt as tgt\n       from (/* Flipped: EDcD varValue[Variable*VarValue] */\n             select\n             distinct\n                    \"varValue\" as src, \"Variable\" as tgt\n             from \"Variable\"\n             where \"Variable\" IS NOT NULL AND \"varValue\" IS NOT NULL)\n            as fence0,\n            (select\n             distinct\n                    \"Variable\" as src, \"varValue\" as tgt\n             from \"Variable\"\n             where \"Variable\" IS NOT NULL AND \"varValue\" IS NOT NULL)\n            as fence1\n       where fence0.tgt = fence1.src)\n      as t1\n      left join (/* I[VarValue] */\n                 select\n                 distinct\n                        \"VarValue\" as src, \"VarValue\" as tgt\n                 from \"VarValue\"\n                 where \"VarValue\" IS NOT NULL)\n                as t2\n      on t1.src = t2.src AND t1.tgt = t2.tgt\n where t2.src IS NULL OR t2.tgt IS NULL",
+        "invariantRuleNames": [],
+        "id": "conj_11"
+    },
+    {
+        "signalRuleNames": [],
+        "normalizationSteps": [
+            "    -(-(critInitReq;critInitReq) \\/ I[Criterion])",
+            "<=> { De Morgan }",
+            "    critInitReq;critInitReq /\\ -I[Criterion]",
+            "<=> { Avoid complements, using law x/\\-y = x-y }",
+            "    critInitReq;critInitReq - I[Criterion]"
+        ],
+        "violationsSQL": "/* case: EDif (l,r) critInitReq;critInitReq - I[Criterion] ([Criterion*Criterion]) */\n /* Optimized case for: <expr1> intersect with the complement of <expr2>.\n where \n   <expr1> = critInitReq;critInitReq ([Criterion*Criterion])\n   <expr2> = I[Criterion] ([Criterion*Criterion])\n    critInitReq;critInitReq /\\ -I[Criterion] ([Criterion*Criterion])\n  */\n select\n distinct\n        t1.src as src, t1.tgt as tgt\n from (/* case: (ECps es), with two or more elements in es.critInitReq;critInitReq */\n       select\n       distinct\n              fence0.src as src, fence1.tgt as tgt\n       from (select\n             distinct\n                    \"Criterion\" as src, \"critInitReq\" as tgt\n             from \"Criterion\"\n             where \"Criterion\" IS NOT NULL AND \"critInitReq\" IS NOT NULL)\n            as fence0,\n            (select\n             distinct\n                    \"Criterion\" as src, \"critInitReq\" as tgt\n             from \"Criterion\"\n             where \"Criterion\" IS NOT NULL AND \"critInitReq\" IS NOT NULL)\n            as fence1\n       where fence0.tgt = fence1.src)\n      as t1\n      left join (/* I[Criterion] */\n                 select\n                 distinct\n                        \"Criterion\" as src, \"Criterion\" as tgt\n                 from \"Criterion\"\n                 where \"Criterion\" IS NOT NULL)\n                as t2\n      on t1.src = t2.src AND t1.tgt = t2.tgt\n where t2.src IS NULL OR t2.tgt IS NULL",
+        "invariantRuleNames": [],
+        "id": "conj_12"
+    },
+    {
+        "signalRuleNames": [
+            "Variables must be associated with every Criterion that mentions them"
+        ],
+        "normalizationSteps": [
+            "    -(-(varName;critVarNames~) \\/ varCrit)",
+            "<=> { De Morgan }",
+            "    varName;critVarNames~ /\\ -varCrit",
+            "<=> { Avoid complements, using law x/\\-y = x-y }",
+            "    varName;critVarNames~ - varCrit"
+        ],
+        "violationsSQL": "/* case: EDif (l,r) varName;critVarNames~ - varCrit ([Variable*Criterion]) */\n /* Optimized case for: <expr1> intersect with the complement of <expr2>.\n where \n   <expr1> = varName;critVarNames~ ([Variable*Criterion])\n   <expr2> = varCrit ([Variable*Criterion])\n    varName;critVarNames~ /\\ -varCrit ([Variable*Criterion])\n  */\n select\n distinct\n        t1.src as src, t1.tgt as tgt\n from (/* case: (ECps es), with two or more elements in es.varName;critVarNames~ */\n       select\n       distinct\n              fence0.src as src, fence1.tgt as tgt\n       from (select\n             distinct\n                    \"Variable\" as src, \"varName\" as tgt\n             from \"Variable\"\n             where \"Variable\" IS NOT NULL AND \"varName\" IS NOT NULL)\n            as fence0,\n            (/* Flipped: EDcD critVarNames[Criterion*PropertyName] */\n             select\n             distinct\n                    \"PropertyName\" as src, \"Criterion\" as tgt\n             from \"critVarNames\")\n            as fence1\n       where fence0.tgt = fence1.src)\n      as t1\n      left join (select\n                 distinct\n                        \"Variable\" as src, \"Criterion\" as tgt\n                 from \"varCrit\")\n                as t2\n      on t1.src = t2.src AND t1.tgt = t2.tgt\n where t2.src IS NULL OR t2.tgt IS NULL",
+        "invariantRuleNames": [],
+        "id": "conj_13"
+    },
+    {
+        "signalRuleNames": [],
+        "normalizationSteps": [
+            "    -(-critInitReq \\/ I[Criterion])",
+            "<=> { De Morgan }",
+            "    critInitReq /\\ -I[Criterion]",
+            "<=> { Avoid complements, using law x/\\-y = x-y }",
+            "    critInitReq - I[Criterion]"
+        ],
+        "violationsSQL": "/* case: EDif (l,r) critInitReq - I[Criterion] ([Criterion*Criterion]) */\n /* Optimized case for: <expr1> intersect with the complement of <expr2>.\n where \n   <expr1> = critInitReq ([Criterion*Criterion])\n   <expr2> = I[Criterion] ([Criterion*Criterion])\n    critInitReq /\\ -I[Criterion] ([Criterion*Criterion])\n  */\n select\n distinct\n        t1.src as src, t1.tgt as tgt\n from (select\n       distinct\n              \"Criterion\" as src, \"critInitReq\" as tgt\n       from \"Criterion\"\n       where \"Criterion\" IS NOT NULL AND \"critInitReq\" IS NOT NULL)\n      as t1\n      left join (/* I[Criterion] */\n                 select\n                 distinct\n                        \"Criterion\" as src, \"Criterion\" as tgt\n                 from \"Criterion\"\n                 where \"Criterion\" IS NOT NULL)\n                as t2\n      on t1.src = t2.src AND t1.tgt = t2.tgt\n where t2.src IS NULL OR t2.tgt IS NULL",
+        "invariantRuleNames": [
+            "ASY critInitReq::Criterion*Criterion"
+        ],
+        "id": "conj_14"
+    },
+    {
+        "signalRuleNames": [
+            "Criterion text parsing - delete parsed CritText"
+        ],
+        "normalizationSteps": [
+            "    -(-critParsedText \\/ -(critText;-I[CritText]))",
+            "<=> { De Morgan }",
+            "    critParsedText /\\ critText;-I[CritText]"
+        ],
+        "violationsSQL": "/* case: (EIsc critParsedText /\\ critText;-I[CritText] ([Criterion*CritText])\n EDcD critParsedText[Criterion*CritText]\n ECps (EDcD critText[Criterion*CritText],ECpl (EDcI CritText))\n  */\n select\n distinct\n        src as src, tgt as tgt\n from (/* `intersect` does not work in MySQL, so this statement is generated: */\n       select\n       distinct\n              subIntersect0.src as src, subIntersect0.tgt as tgt\n       from (select\n             distinct\n                    \"Criterion\" as src, \"critParsedText\" as tgt\n             from \"Criterion\"\n             where \"Criterion\" IS NOT NULL AND \"critParsedText\" IS NOT NULL)\n            as subIntersect0,\n            (/* case: (ECps es), with two or more elements in es.critText;-I[CritText] */\n             select\n             distinct\n                    fence0.src as src, fence1.tgt as tgt\n             from (select\n                   distinct\n                          \"Criterion\" as src, \"critText\" as tgt\n                   from \"Criterion\"\n                   where \"Criterion\" IS NOT NULL AND \"critText\" IS NOT NULL)\n                  as fence0,\n                  (/* case: ECpl (EDcI CritText) */\n                   select\n                   distinct\n                          \"concept0\".\"CritText\" as src, \"concept1\".\"CritText\" as tgt\n                   from \"CritText\" as \"concept0\",\n                        \"CritText\" as \"concept1\"\n                   where \"concept0\".\"CritText\" <> \"concept1\".\"CritText\")\n                  as fence1\n             where fence0.tgt = fence1.src)\n            as subIntersect1\n       where subIntersect1.src = subIntersect0.src AND subIntersect1.tgt = subIntersect0.tgt)\n      as someDummyNameBecauseMySQLNeedsOne",
+        "invariantRuleNames": [],
+        "id": "conj_15"
+    },
+    {
+        "signalRuleNames": [
+            "Variables that are referred to in a Criteria must exist"
+        ],
+        "normalizationSteps": [
+            "    -(-critVarNames \\/ V[Criterion*Variable];varName)",
+            "<=> { De Morgan }",
+            "    critVarNames /\\ -(V[Criterion*Variable];varName)",
+            "<=> { Avoid complements, using law x/\\-y = x-y }",
+            "    critVarNames - V[Criterion*Variable];varName"
+        ],
+        "violationsSQL": "/* case: EDif (l,r) critVarNames - V[Criterion*Variable];varName ([Criterion*PropertyName]) */\n /* Optimized case for: <expr1> intersect with the complement of <expr2>.\n where \n   <expr1> = critVarNames ([Criterion*PropertyName])\n   <expr2> = V[Criterion*Variable];varName ([Criterion*PropertyName])\n    critVarNames /\\ -(V[Criterion*Variable];varName) ([Criterion*PropertyName])\n  */\n select\n distinct\n        t1.src as src, t1.tgt as tgt\n from (select\n       distinct\n              \"Criterion\" as src, \"PropertyName\" as tgt\n       from \"critVarNames\")\n      as t1\n      left\n      join (/* case: (ECps es), with two or more elements in es.V[Criterion*Variable];varName */\n            select\n            distinct\n                   fence0.src as src, fence1.tgt as tgt\n            from (/* case: (EDcV (Sign s t))   V[ \"[Criterion*Variable]\" ] */\n                  select\n                  distinct\n                         fst.\"Criterion\" as src, snd.\"Variable\" as tgt\n                  from \"Criterion\" as fst,\n                       \"Variable\" as snd\n                  where fst.\"Criterion\" IS NOT NULL AND snd.\"Variable\" IS NOT NULL)\n                 as fence0,\n                 (select\n                  distinct\n                         \"Variable\" as src, \"varName\" as tgt\n                  from \"Variable\"\n                  where \"Variable\" IS NOT NULL AND \"varName\" IS NOT NULL)\n                 as fence1\n            where fence0.tgt = fence1.src)\n           as t2\n      on t1.src = t2.src AND t1.tgt = t2.tgt\n where t2.src IS NULL OR t2.tgt IS NULL",
+        "invariantRuleNames": [],
+        "id": "conj_16"
+    },
+    {
+        "signalRuleNames": [
+            "Variables that are associated with a Criterion must be referred to by that Criterion"
+        ],
+        "normalizationSteps": [
+            "    -(-varCrit \\/ varName;critVarNames~)",
+            "<=> { De Morgan }",
+            "    varCrit /\\ -(varName;critVarNames~)",
+            "<=> { Avoid complements, using law x/\\-y = x-y }",
+            "    varCrit - varName;critVarNames~"
+        ],
+        "violationsSQL": "/* case: EDif (l,r) varCrit - varName;critVarNames~ ([Variable*Criterion]) */\n /* Optimized case for: <expr1> intersect with the complement of <expr2>.\n where \n   <expr1> = varCrit ([Variable*Criterion])\n   <expr2> = varName;critVarNames~ ([Variable*Criterion])\n    varCrit /\\ -(varName;critVarNames~) ([Variable*Criterion])\n  */\n select\n distinct\n        t1.src as src, t1.tgt as tgt\n from (select\n       distinct\n              \"Variable\" as src, \"Criterion\" as tgt\n       from \"varCrit\")\n      as t1\n      left\n      join (/* case: (ECps es), with two or more elements in es.varName;critVarNames~ */\n            select\n            distinct\n                   fence0.src as src, fence1.tgt as tgt\n            from (select\n                  distinct\n                         \"Variable\" as src, \"varName\" as tgt\n                  from \"Variable\"\n                  where \"Variable\" IS NOT NULL AND \"varName\" IS NOT NULL)\n                 as fence0,\n                 (/* Flipped: EDcD critVarNames[Criterion*PropertyName] */\n                  select\n                  distinct\n                         \"PropertyName\" as src, \"Criterion\" as tgt\n                  from \"critVarNames\")\n                 as fence1\n            where fence0.tgt = fence1.src)\n           as t2\n      on t1.src = t2.src AND t1.tgt = t2.tgt\n where t2.src IS NULL OR t2.tgt IS NULL",
+        "invariantRuleNames": [],
+        "id": "conj_17"
+    },
+    {
+        "signalRuleNames": [
+            "Variables that are not mentioned in any Criterion may not exist"
+        ],
+        "normalizationSteps": [
+            "    -(-varName \\/ V[Variable*Criterion];critVarNames)",
+            "<=> { De Morgan }",
+            "    varName /\\ -(V[Variable*Criterion];critVarNames)",
+            "<=> { Avoid complements, using law x/\\-y = x-y }",
+            "    varName - V[Variable*Criterion];critVarNames"
+        ],
+        "violationsSQL": "/* case: EDif (l,r) varName - V[Variable*Criterion];critVarNames ([Variable*PropertyName]) */\n /* Optimized case for: <expr1> intersect with the complement of <expr2>.\n where \n   <expr1> = varName ([Variable*PropertyName])\n   <expr2> = V[Variable*Criterion];critVarNames ([Variable*PropertyName])\n    varName /\\ -(V[Variable*Criterion];critVarNames) ([Variable*PropertyName])\n  */\n select\n distinct\n        t1.src as src, t1.tgt as tgt\n from (select\n       distinct\n              \"Variable\" as src, \"varName\" as tgt\n       from \"Variable\"\n       where \"Variable\" IS NOT NULL AND \"varName\" IS NOT NULL)\n      as t1\n      left\n      join (/* case: (ECps es), with two or more elements in es.V[Variable*Criterion];critVarNames */\n            select\n            distinct\n                   fence0.src as src, fence1.tgt as tgt\n            from (/* case: (EDcV (Sign s t))   V[ \"[Variable*Criterion]\" ] */\n                  select\n                  distinct\n                         fst.\"Variable\" as src, snd.\"Criterion\" as tgt\n                  from \"Variable\" as fst,\n                       \"Criterion\" as snd\n                  where fst.\"Variable\" IS NOT NULL AND snd.\"Criterion\" IS NOT NULL)\n                 as fence0,\n                 (select\n                  distinct\n                         \"Criterion\" as src, \"PropertyName\" as tgt\n                  from \"critVarNames\")\n                 as fence1\n            where fence0.tgt = fence1.src)\n           as t2\n      on t1.src = t2.src AND t1.tgt = t2.tgt\n where t2.src IS NULL OR t2.tgt IS NULL",
+        "invariantRuleNames": [],
+        "id": "conj_18"
+    },
+    {
+        "signalRuleNames": [],
+        "normalizationSteps": [
+            "    -(-varShowCrit \\/ varCrit)",
+            "<=> { De Morgan }",
+            "    varShowCrit /\\ -varCrit",
+            "<=> { Avoid complements, using law x/\\-y = x-y }",
+            "    varShowCrit - varCrit"
+        ],
+        "violationsSQL": "/* case: EDif (l,r) varShowCrit - varCrit ([Variable*Criterion]) */\n /* Optimized case for: <expr1> intersect with the complement of <expr2>.\n where \n   <expr1> = varShowCrit ([Variable*Criterion])\n   <expr2> = varCrit ([Variable*Criterion])\n    varShowCrit /\\ -varCrit ([Variable*Criterion])\n  */\n select\n distinct\n        t1.src as src, t1.tgt as tgt\n from (select\n       distinct\n              \"Variable\" as src, \"Criterion\" as tgt\n       from \"varShowCrit\")\n      as t1\n      left join (select\n                 distinct\n                        \"Variable\" as src, \"Criterion\" as tgt\n                 from \"varCrit\")\n                as t2\n      on t1.src = t2.src AND t1.tgt = t2.tgt\n where t2.src IS NULL OR t2.tgt IS NULL",
+        "invariantRuleNames": [
+            "varShowCrit integrity"
+        ],
+        "id": "conj_19"
+    },
+    {
+        "signalRuleNames": [],
+        "normalizationSteps": [
+            "    -(-I[Criterion] \\/ critText;critText~)",
+            "<=> { De Morgan }",
+            "    I[Criterion] /\\ -(critText;critText~)",
+            "<=> { Avoid complements, using law x/\\-y = x-y }",
+            "    I[Criterion] - critText;critText~"
+        ],
+        "violationsSQL": "/* case: EDif (l,r) I[Criterion] - critText;critText~ ([Criterion*Criterion]) */\n /* Optimized case for: critText[Criterion*CritText] [TOT]. */\n /*    I[Criterion] /\\ -(critText;critText~) ([Criterion*Criterion]) */\n select\n distinct\n        \"Criterion\" as src, \"Criterion\" as tgt\n from \"Criterion\" as notIns\n where \"Criterion\" not in (select src\n                           from (select\n                                 distinct\n                                        \"Criterion\" as src, \"critText\" as tgt\n                                 from \"Criterion\"\n                                 where \"Criterion\" IS NOT NULL AND \"critText\" IS NOT NULL)\n                                as src) AND \"Criterion\" IS NOT NULL",
+        "invariantRuleNames": [
+            "TOT critText::Criterion*CritText"
+        ],
+        "id": "conj_20"
+    },
+    {
+        "signalRuleNames": [],
+        "normalizationSteps": [
+            "    -(-I[Variable] \\/ varName;varName~)",
+            "<=> { De Morgan }",
+            "    I[Variable] /\\ -(varName;varName~)",
+            "<=> { Avoid complements, using law x/\\-y = x-y }",
+            "    I[Variable] - varName;varName~"
+        ],
+        "violationsSQL": "/* case: EDif (l,r) I[Variable] - varName;varName~ ([Variable*Variable]) */\n /* Optimized case for: varName[Variable*PropertyName] [TOT]. */\n /*    I[Variable] /\\ -(varName;varName~) ([Variable*Variable]) */\n select\n distinct\n        \"Variable\" as src, \"Variable\" as tgt\n from \"Variable\" as notIns\n where \"Variable\" not in (select src\n                          from (select\n                                distinct\n                                       \"Variable\" as src, \"varName\" as tgt\n                                from \"Variable\"\n                                where \"Variable\" IS NOT NULL AND \"varName\" IS NOT NULL)\n                               as src) AND \"Variable\" IS NOT NULL",
+        "invariantRuleNames": [
+            "TOT varName::Variable*PropertyName"
+        ],
+        "id": "conj_21"
+    },
+    {
+        "signalRuleNames": [
+            "Criterion text parsing - disassociate VarNames from Criteria"
+        ],
+        "normalizationSteps": [
+            "    (I[Criterion] - critParsedText;critParsedText~);critVarNames"
+        ],
+        "violationsSQL": "/* case: (ECps es), with two or more elements in es.(I[Criterion] - critParsedText;critParsedText~);critVarNames */\n select\n distinct\n        fence0.src as src, fence1.tgt as tgt\n from (/* case: EDif (l,r) I[Criterion] - critParsedText;critParsedText~ ([Criterion*Criterion]) */\n       /* Optimized case for: <expr1> intersect with the complement of <expr2>.\n where \n   <expr1> = I[Criterion] ([Criterion*Criterion])\n   <expr2> = critParsedText;critParsedText~ ([Criterion*Criterion])\n    I[Criterion] /\\ -(critParsedText;critParsedText~) ([Criterion*Criterion])\n  */\n       select\n       distinct\n              t1.src as src, t1.tgt as tgt\n       from (/* I[Criterion] */\n             select\n             distinct\n                    \"Criterion\" as src, \"Criterion\" as tgt\n             from \"Criterion\"\n             where \"Criterion\" IS NOT NULL)\n            as t1\n            left\n            join (/* case: (ECps es), with two or more elements in es.critParsedText;critParsedText~ */\n                  select\n                  distinct\n                         fence0.src as src, fence1.tgt as tgt\n                  from (select\n                        distinct\n                               \"Criterion\" as src, \"critParsedText\" as tgt\n                        from \"Criterion\"\n                        where \"Criterion\" IS NOT NULL AND \"critParsedText\" IS NOT NULL)\n                       as fence0,\n                       (/* Flipped: EDcD critParsedText[Criterion*CritText] */\n                        select\n                        distinct\n                               \"critParsedText\" as src, \"Criterion\" as tgt\n                        from \"Criterion\"\n                        where \"Criterion\" IS NOT NULL AND \"critParsedText\" IS NOT NULL)\n                       as fence1\n                  where fence0.tgt = fence1.src)\n                 as t2\n            on t1.src = t2.src AND t1.tgt = t2.tgt\n       where t2.src IS NULL OR t2.tgt IS NULL)\n      as fence0,\n      (select\n       distinct\n              \"Criterion\" as src, \"PropertyName\" as tgt\n       from \"critVarNames\")\n      as fence1\n where fence0.tgt = fence1.src",
+        "invariantRuleNames": [],
+        "id": "conj_22"
+    },
+    {
+        "signalRuleNames": [
+            "critShowText - re-init cleanup"
+        ],
+        "normalizationSteps": [
+            "    varShowCrit;critInitReq"
+        ],
+        "violationsSQL": "/* case: (ECps es), with two or more elements in es.varShowCrit;critInitReq */\n select\n distinct\n        fence0.src as src, fence1.tgt as tgt\n from (select\n       distinct\n              \"Variable\" as src, \"Criterion\" as tgt\n       from \"varShowCrit\")\n      as fence0,\n      (select\n       distinct\n              \"Criterion\" as src, \"critInitReq\" as tgt\n       from \"Criterion\"\n       where \"Criterion\" IS NOT NULL AND \"critInitReq\" IS NOT NULL)\n      as fence1\n where fence0.tgt = fence1.src",
+        "invariantRuleNames": [],
+        "id": "conj_23"
+    },
+    {
+        "signalRuleNames": [],
+        "normalizationSteps": [
+            "    -V[Criterion*Criterion]"
+        ],
+        "violationsSQL": "/* this will quaranteed return 0 rows: */\n select\n distinct\n        a as src, a as tgt\n from (/* Select nothing... */\n       select 1 as a)\n      as nothing\n where a <> 1",
+        "invariantRuleNames": [
+            "SYM critInitReq::Criterion*Criterion"
+        ],
+        "id": "conj_24"
+    }
+]

@@ -1,0 +1,956 @@
+{
+    "signals": [
+        {
+            "origin": "line 30:1, file CritTexts.adl",
+            "tgtConcept": "CritText",
+            "ruleAdl": "(I[Criterion] - critVarNames;critVarNames~);critText |- critParsedText",
+            "pairView": [
+                {
+                    "expTgt": null,
+                    "Text": "{EX} ParseCritText;critVarNames;Criterion;",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 0
+                },
+                {
+                    "expTgt": "Criterion",
+                    "Text": null,
+                    "srcOrTgt": "Src",
+                    "segmentType": "Exp",
+                    "expSQL": "/* I[Criterion] */\n select\n distinct\n        \"Criterion\" as src, \"Criterion\" as tgt\n from \"Criterion\"\n where \"Criterion\" IS NOT NULL",
+                    "seqNr": 1
+                },
+                {
+                    "expTgt": null,
+                    "Text": ";PropertyName;",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 2
+                },
+                {
+                    "expTgt": "CritText",
+                    "Text": null,
+                    "srcOrTgt": "Tgt",
+                    "segmentType": "Exp",
+                    "expSQL": "/* I[CritText] */\n select\n distinct\n        \"CritText\" as src, \"CritText\" as tgt\n from \"CritText\"\n where \"CritText\" IS NOT NULL",
+                    "seqNr": 3
+                },
+                {
+                    "expTgt": null,
+                    "Text": "{EX} InsPair;critParsedText;Criterion;",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 4
+                },
+                {
+                    "expTgt": "Criterion",
+                    "Text": null,
+                    "srcOrTgt": "Src",
+                    "segmentType": "Exp",
+                    "expSQL": "/* I[Criterion] */\n select\n distinct\n        \"Criterion\" as src, \"Criterion\" as tgt\n from \"Criterion\"\n where \"Criterion\" IS NOT NULL",
+                    "seqNr": 5
+                },
+                {
+                    "expTgt": null,
+                    "Text": ";CritText;",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 6
+                },
+                {
+                    "expTgt": "CritText",
+                    "Text": null,
+                    "srcOrTgt": "Tgt",
+                    "segmentType": "Exp",
+                    "expSQL": "/* I[CritText] */\n select\n distinct\n        \"CritText\" as src, \"CritText\" as tgt\n from \"CritText\"\n where \"CritText\" IS NOT NULL",
+                    "seqNr": 7
+                },
+                {
+                    "expTgt": null,
+                    "Text": "{EX} DelPair;critShowText;Criterion;",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 8
+                },
+                {
+                    "expTgt": "Criterion",
+                    "Text": null,
+                    "srcOrTgt": "Src",
+                    "segmentType": "Exp",
+                    "expSQL": "/* I[Criterion] */\n select\n distinct\n        \"Criterion\" as src, \"Criterion\" as tgt\n from \"Criterion\"\n where \"Criterion\" IS NOT NULL",
+                    "seqNr": 9
+                },
+                {
+                    "expTgt": null,
+                    "Text": ";CritText;",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 10
+                },
+                {
+                    "expTgt": "CritText",
+                    "Text": null,
+                    "srcOrTgt": "Src",
+                    "segmentType": "Exp",
+                    "expSQL": "select\n distinct\n        \"Criterion\" as src, \"critShowText\" as tgt\n from \"Criterion\"\n where \"Criterion\" IS NOT NULL AND \"critShowText\" IS NOT NULL",
+                    "seqNr": 11
+                }
+            ],
+            "name": "Criterion text parsing - extract VarNames from CritText",
+            "meaning": "Criteria must have their CritText parsed",
+            "srcConcept": "Criterion",
+            "conjunctIds": [
+                "conj_4"
+            ],
+            "message": ""
+        },
+        {
+            "origin": "line 39:1, file CritTexts.adl",
+            "tgtConcept": "CritText",
+            "ruleAdl": "critParsedText /\\ critText;-I[CritText] |- -V[Criterion*CritText]",
+            "pairView": [
+                {
+                    "expTgt": null,
+                    "Text": "{EX} DelPair;critParsedText;Criterion;",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 0
+                },
+                {
+                    "expTgt": "Criterion",
+                    "Text": null,
+                    "srcOrTgt": "Src",
+                    "segmentType": "Exp",
+                    "expSQL": "/* I[Criterion] */\n select\n distinct\n        \"Criterion\" as src, \"Criterion\" as tgt\n from \"Criterion\"\n where \"Criterion\" IS NOT NULL",
+                    "seqNr": 1
+                },
+                {
+                    "expTgt": null,
+                    "Text": ";CritText;",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 2
+                },
+                {
+                    "expTgt": "CritText",
+                    "Text": null,
+                    "srcOrTgt": "Tgt",
+                    "segmentType": "Exp",
+                    "expSQL": "/* I[CritText] */\n select\n distinct\n        \"CritText\" as src, \"CritText\" as tgt\n from \"CritText\"\n where \"CritText\" IS NOT NULL",
+                    "seqNr": 3
+                }
+            ],
+            "name": "Criterion text parsing - delete parsed CritText",
+            "meaning": "Criteria with a CritText that differs from its ParsedText may no longer\nhave a ParsedText",
+            "srcConcept": "Criterion",
+            "conjunctIds": [
+                "conj_15"
+            ],
+            "message": ""
+        },
+        {
+            "origin": "line 45:1, file CritTexts.adl",
+            "tgtConcept": "PropertyName",
+            "ruleAdl": "(I[Criterion] - critParsedText;critParsedText~);critVarNames |- -V[Criterion*PropertyName]",
+            "pairView": [
+                {
+                    "expTgt": null,
+                    "Text": "{EX} DelPair;critVarNames;Criterion;",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 0
+                },
+                {
+                    "expTgt": "Criterion",
+                    "Text": null,
+                    "srcOrTgt": "Src",
+                    "segmentType": "Exp",
+                    "expSQL": "/* I[Criterion] */\n select\n distinct\n        \"Criterion\" as src, \"Criterion\" as tgt\n from \"Criterion\"\n where \"Criterion\" IS NOT NULL",
+                    "seqNr": 1
+                },
+                {
+                    "expTgt": null,
+                    "Text": ";PropertyName;",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 2
+                },
+                {
+                    "expTgt": "PropertyName",
+                    "Text": null,
+                    "srcOrTgt": "Tgt",
+                    "segmentType": "Exp",
+                    "expSQL": "/* I[PropertyName] */\n select\n distinct\n        \"PropertyName\" as src, \"PropertyName\" as tgt\n from \"PropertyName\"\n where \"PropertyName\" IS NOT NULL",
+                    "seqNr": 3
+                }
+            ],
+            "name": "Criterion text parsing - disassociate VarNames from Criteria",
+            "meaning": "Criteria without a ParsedText may not be associated with variable(\nname)s",
+            "srcConcept": "Criterion",
+            "conjunctIds": [
+                "conj_22"
+            ],
+            "message": ""
+        },
+        {
+            "origin": "line 53:1, file CritTexts.adl",
+            "tgtConcept": "PropertyName",
+            "ruleAdl": "critVarNames |- V[Criterion*Variable];varName",
+            "pairView": [
+                {
+                    "expTgt": null,
+                    "Text": "{EX} NewStruct;Variable",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 0
+                },
+                {
+                    "expTgt": null,
+                    "Text": ";varName;Variable;_NEW;PropertyName;",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 1
+                },
+                {
+                    "expTgt": "PropertyName",
+                    "Text": null,
+                    "srcOrTgt": "Tgt",
+                    "segmentType": "Exp",
+                    "expSQL": "/* I[PropertyName] */\n select\n distinct\n        \"PropertyName\" as src, \"PropertyName\" as tgt\n from \"PropertyName\"\n where \"PropertyName\" IS NOT NULL",
+                    "seqNr": 2
+                }
+            ],
+            "name": "Variables that are referred to in a Criteria must exist",
+            "meaning": "",
+            "srcConcept": "Criterion",
+            "conjunctIds": [
+                "conj_16"
+            ],
+            "message": ""
+        },
+        {
+            "origin": "line 58:1, file CritTexts.adl",
+            "tgtConcept": "PropertyName",
+            "ruleAdl": "varName |- V[Variable*Criterion];critVarNames",
+            "pairView": [
+                {
+                    "expTgt": null,
+                    "Text": "{EX} DelAtom;Variable;",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 0
+                },
+                {
+                    "expTgt": "Variable",
+                    "Text": null,
+                    "srcOrTgt": "Src",
+                    "segmentType": "Exp",
+                    "expSQL": "/* I[Variable] */\n select\n distinct\n        \"Variable\" as src, \"Variable\" as tgt\n from \"Variable\"\n where \"Variable\" IS NOT NULL",
+                    "seqNr": 1
+                }
+            ],
+            "name": "Variables that are not mentioned in any Criterion may not exist",
+            "meaning": "",
+            "srcConcept": "Variable",
+            "conjunctIds": [
+                "conj_18"
+            ],
+            "message": ""
+        },
+        {
+            "origin": "line 62:1, file CritTexts.adl",
+            "tgtConcept": "Criterion",
+            "ruleAdl": "varName;critVarNames~ |- varCrit",
+            "pairView": [
+                {
+                    "expTgt": null,
+                    "Text": "{EX} InsPair;varCrit;Variable;",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 0
+                },
+                {
+                    "expTgt": "Variable",
+                    "Text": null,
+                    "srcOrTgt": "Src",
+                    "segmentType": "Exp",
+                    "expSQL": "/* I[Variable] */\n select\n distinct\n        \"Variable\" as src, \"Variable\" as tgt\n from \"Variable\"\n where \"Variable\" IS NOT NULL",
+                    "seqNr": 1
+                },
+                {
+                    "expTgt": null,
+                    "Text": ";Criterion;",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 2
+                },
+                {
+                    "expTgt": "Criterion",
+                    "Text": null,
+                    "srcOrTgt": "Tgt",
+                    "segmentType": "Exp",
+                    "expSQL": "/* I[Criterion] */\n select\n distinct\n        \"Criterion\" as src, \"Criterion\" as tgt\n from \"Criterion\"\n where \"Criterion\" IS NOT NULL",
+                    "seqNr": 3
+                }
+            ],
+            "name": "Variables must be associated with every Criterion that mentions them",
+            "meaning": "",
+            "srcConcept": "Variable",
+            "conjunctIds": [
+                "conj_13"
+            ],
+            "message": ""
+        },
+        {
+            "origin": "line 66:1, file CritTexts.adl",
+            "tgtConcept": "Criterion",
+            "ruleAdl": "varCrit |- varName;critVarNames~",
+            "pairView": [
+                {
+                    "expTgt": null,
+                    "Text": "{EX} DelPair;varCrit;Variable;",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 0
+                },
+                {
+                    "expTgt": "Variable",
+                    "Text": null,
+                    "srcOrTgt": "Src",
+                    "segmentType": "Exp",
+                    "expSQL": "/* I[Variable] */\n select\n distinct\n        \"Variable\" as src, \"Variable\" as tgt\n from \"Variable\"\n where \"Variable\" IS NOT NULL",
+                    "seqNr": 1
+                },
+                {
+                    "expTgt": null,
+                    "Text": ";Criterion;",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 2
+                },
+                {
+                    "expTgt": "Criterion",
+                    "Text": null,
+                    "srcOrTgt": "Tgt",
+                    "segmentType": "Exp",
+                    "expSQL": "/* I[Criterion] */\n select\n distinct\n        \"Criterion\" as src, \"Criterion\" as tgt\n from \"Criterion\"\n where \"Criterion\" IS NOT NULL",
+                    "seqNr": 3
+                }
+            ],
+            "name": "Variables that are associated with a Criterion must be referred to by that Criterion",
+            "meaning": "",
+            "srcConcept": "Variable",
+            "conjunctIds": [
+                "conj_17"
+            ],
+            "message": ""
+        },
+        {
+            "origin": "line 84:1, file CritTexts.adl",
+            "tgtConcept": "CritText",
+            "ruleAdl": "(I[Criterion] - critShowText;critShowText~);critText |- critInitReq;critText",
+            "pairView": [
+                {
+                    "expTgt": null,
+                    "Text": "{EX} InsPair;critInitReq;Criterion;",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 0
+                },
+                {
+                    "expTgt": "Criterion",
+                    "Text": null,
+                    "srcOrTgt": "Src",
+                    "segmentType": "Exp",
+                    "expSQL": "/* I[Criterion] */\n select\n distinct\n        \"Criterion\" as src, \"Criterion\" as tgt\n from \"Criterion\"\n where \"Criterion\" IS NOT NULL",
+                    "seqNr": 1
+                },
+                {
+                    "expTgt": null,
+                    "Text": ";Criterion;",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 2
+                },
+                {
+                    "expTgt": "Criterion",
+                    "Text": null,
+                    "srcOrTgt": "Src",
+                    "segmentType": "Exp",
+                    "expSQL": "/* I[Criterion] */\n select\n distinct\n        \"Criterion\" as src, \"Criterion\" as tgt\n from \"Criterion\"\n where \"Criterion\" IS NOT NULL",
+                    "seqNr": 3
+                }
+            ],
+            "name": "critShowText - start initialization sequence",
+            "meaning": "If a Criterion has no ShowText, it needs to be re-initialized",
+            "srcConcept": "Criterion",
+            "conjunctIds": [
+                "conj_3"
+            ],
+            "message": ""
+        },
+        {
+            "origin": "line 90:1, file CritTexts.adl",
+            "tgtConcept": "Criterion",
+            "ruleAdl": "varShowCrit;critInitReq |- -V[Variable*Criterion]",
+            "pairView": [
+                {
+                    "expTgt": null,
+                    "Text": "{EX} DelPair;varShowCrit;Variable;",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 0
+                },
+                {
+                    "expTgt": "Variable",
+                    "Text": null,
+                    "srcOrTgt": "Src",
+                    "segmentType": "Exp",
+                    "expSQL": "/* I[Variable] */\n select\n distinct\n        \"Variable\" as src, \"Variable\" as tgt\n from \"Variable\"\n where \"Variable\" IS NOT NULL",
+                    "seqNr": 1
+                },
+                {
+                    "expTgt": null,
+                    "Text": ";Criterion;",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 2
+                },
+                {
+                    "expTgt": "Criterion",
+                    "Text": null,
+                    "srcOrTgt": "Tgt",
+                    "segmentType": "Exp",
+                    "expSQL": "/* I[Criterion] */\n select\n distinct\n        \"Criterion\" as src, \"Criterion\" as tgt\n from \"Criterion\"\n where \"Criterion\" IS NOT NULL",
+                    "seqNr": 3
+                }
+            ],
+            "name": "critShowText - re-init cleanup",
+            "meaning": "If a Criterion needs to be re-initialized, Variables may not be listed\nas being used in its ShowText",
+            "srcConcept": "Variable",
+            "conjunctIds": [
+                "conj_23"
+            ],
+            "message": ""
+        },
+        {
+            "origin": "line 95:1, file CritTexts.adl",
+            "tgtConcept": "Criterion",
+            "ruleAdl": "critInitReq - varShowCrit~;varShowCrit |- critText;critShowText~",
+            "pairView": [
+                {
+                    "expTgt": null,
+                    "Text": "{EX} DelPair;critInitReq;Criterion;",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 0
+                },
+                {
+                    "expTgt": "Criterion",
+                    "Text": null,
+                    "srcOrTgt": "Src",
+                    "segmentType": "Exp",
+                    "expSQL": "/* I[Criterion] */\n select\n distinct\n        \"Criterion\" as src, \"Criterion\" as tgt\n from \"Criterion\"\n where \"Criterion\" IS NOT NULL",
+                    "seqNr": 1
+                },
+                {
+                    "expTgt": null,
+                    "Text": ";Criterion;",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 2
+                },
+                {
+                    "expTgt": "Criterion",
+                    "Text": null,
+                    "srcOrTgt": "Tgt",
+                    "segmentType": "Exp",
+                    "expSQL": "/* I[Criterion] */\n select\n distinct\n        \"Criterion\" as src, \"Criterion\" as tgt\n from \"Criterion\"\n where \"Criterion\" IS NOT NULL",
+                    "seqNr": 3
+                },
+                {
+                    "expTgt": null,
+                    "Text": "{EX} InsPair;critShowText;Criterion;",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 4
+                },
+                {
+                    "expTgt": "Criterion",
+                    "Text": null,
+                    "srcOrTgt": "Src",
+                    "segmentType": "Exp",
+                    "expSQL": "/* I[Criterion] */\n select\n distinct\n        \"Criterion\" as src, \"Criterion\" as tgt\n from \"Criterion\"\n where \"Criterion\" IS NOT NULL",
+                    "seqNr": 5
+                },
+                {
+                    "expTgt": null,
+                    "Text": ";CritText;",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 6
+                },
+                {
+                    "expTgt": "CritText",
+                    "Text": null,
+                    "srcOrTgt": "Tgt",
+                    "segmentType": "Exp",
+                    "expSQL": "select\n distinct\n        \"Criterion\" as src, \"critText\" as tgt\n from \"Criterion\"\n where \"Criterion\" IS NOT NULL AND \"critText\" IS NOT NULL",
+                    "seqNr": 7
+                }
+            ],
+            "name": "critShowText - initialize",
+            "meaning": "A Criterion that needs to be re-initialized and does not use values of\nVariables in its ShowText, must have the criterion-text as its ShowText,\nwhich complete the re-initialization.",
+            "srcConcept": "Criterion",
+            "conjunctIds": [
+                "conj_0"
+            ],
+            "message": ""
+        },
+        {
+            "origin": "line 102:1, file CritTexts.adl",
+            "tgtConcept": "Criterion",
+            "ruleAdl": "(I[Variable] /\\ (varShowValue;-I[VarValue];varValue~ \\/ -(varValue;varValue~)));varShowCrit |- varShowCrit;critInitReq",
+            "pairView": [
+                {
+                    "expTgt": null,
+                    "Text": "{EX} DelPair;varShowValue;Variable;",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 0
+                },
+                {
+                    "expTgt": "Variable",
+                    "Text": null,
+                    "srcOrTgt": "Src",
+                    "segmentType": "Exp",
+                    "expSQL": "/* I[Variable] */\n select\n distinct\n        \"Variable\" as src, \"Variable\" as tgt\n from \"Variable\"\n where \"Variable\" IS NOT NULL",
+                    "seqNr": 1
+                },
+                {
+                    "expTgt": null,
+                    "Text": ";VarValue;",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 2
+                },
+                {
+                    "expTgt": "VarValue",
+                    "Text": null,
+                    "srcOrTgt": "Src",
+                    "segmentType": "Exp",
+                    "expSQL": "select\n distinct\n        \"Variable\" as src, \"varShowValue\" as tgt\n from \"Variable\"\n where \"Variable\" IS NOT NULL AND \"varShowValue\" IS NOT NULL",
+                    "seqNr": 3
+                },
+                {
+                    "expTgt": null,
+                    "Text": "{EX} InsPair;critInitReq;Criterion;",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 4
+                },
+                {
+                    "expTgt": "Criterion",
+                    "Text": null,
+                    "srcOrTgt": "Tgt",
+                    "segmentType": "Exp",
+                    "expSQL": "/* I[Criterion] */\n select\n distinct\n        \"Criterion\" as src, \"Criterion\" as tgt\n from \"Criterion\"\n where \"Criterion\" IS NOT NULL",
+                    "seqNr": 5
+                },
+                {
+                    "expTgt": null,
+                    "Text": ";Criterion;",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 6
+                },
+                {
+                    "expTgt": "Criterion",
+                    "Text": null,
+                    "srcOrTgt": "Tgt",
+                    "segmentType": "Exp",
+                    "expSQL": "/* I[Criterion] */\n select\n distinct\n        \"Criterion\" as src, \"Criterion\" as tgt\n from \"Criterion\"\n where \"Criterion\" IS NOT NULL",
+                    "seqNr": 7
+                }
+            ],
+            "name": "critShowText - request re-init after a value update",
+            "meaning": "If a Variable is used in the ShowText of a Criterion, while its value\ndoes not exist (any more), or differs from the value used in the\nShowText, then the Criterion needs to be re-initialized.",
+            "srcConcept": "Variable",
+            "conjunctIds": [
+                "conj_1"
+            ],
+            "message": ""
+        },
+        {
+            "origin": "line 110:1, file CritTexts.adl",
+            "tgtConcept": "Criterion",
+            "ruleAdl": "(I[Variable] /\\ varValue;varValue~);varCrit;(I[Criterion] - critInitReq) |- varShowCrit",
+            "pairView": [
+                {
+                    "expTgt": null,
+                    "Text": "{EX} InsPair;critShowText;Criterion;",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 0
+                },
+                {
+                    "expTgt": "Criterion",
+                    "Text": null,
+                    "srcOrTgt": "Tgt",
+                    "segmentType": "Exp",
+                    "expSQL": "/* I[Criterion] */\n select\n distinct\n        \"Criterion\" as src, \"Criterion\" as tgt\n from \"Criterion\"\n where \"Criterion\" IS NOT NULL",
+                    "seqNr": 1
+                },
+                {
+                    "expTgt": null,
+                    "Text": ";CritText;",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 2
+                },
+                {
+                    "expTgt": null,
+                    "Text": "{php}str_replace('['.'",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 3
+                },
+                {
+                    "expTgt": "PropertyName",
+                    "Text": null,
+                    "srcOrTgt": "Src",
+                    "segmentType": "Exp",
+                    "expSQL": "select\n distinct\n        \"Variable\" as src, \"varName\" as tgt\n from \"Variable\"\n where \"Variable\" IS NOT NULL AND \"varName\" IS NOT NULL",
+                    "seqNr": 4
+                },
+                {
+                    "expTgt": null,
+                    "Text": "'.']','",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 5
+                },
+                {
+                    "expTgt": "VarValue",
+                    "Text": null,
+                    "srcOrTgt": "Src",
+                    "segmentType": "Exp",
+                    "expSQL": "select\n distinct\n        \"Variable\" as src, \"varValue\" as tgt\n from \"Variable\"\n where \"Variable\" IS NOT NULL AND \"varValue\" IS NOT NULL",
+                    "seqNr": 6
+                },
+                {
+                    "expTgt": null,
+                    "Text": "','",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 7
+                },
+                {
+                    "expTgt": "CritText",
+                    "Text": null,
+                    "srcOrTgt": "Tgt",
+                    "segmentType": "Exp",
+                    "expSQL": "select\n distinct\n        \"Criterion\" as src, \"critShowText\" as tgt\n from \"Criterion\"\n where \"Criterion\" IS NOT NULL AND \"critShowText\" IS NOT NULL",
+                    "seqNr": 8
+                },
+                {
+                    "expTgt": null,
+                    "Text": "')",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 9
+                },
+                {
+                    "expTgt": null,
+                    "Text": "{EX} InsPair;varShowCrit;Variable;",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 10
+                },
+                {
+                    "expTgt": "Variable",
+                    "Text": null,
+                    "srcOrTgt": "Src",
+                    "segmentType": "Exp",
+                    "expSQL": "/* I[Variable] */\n select\n distinct\n        \"Variable\" as src, \"Variable\" as tgt\n from \"Variable\"\n where \"Variable\" IS NOT NULL",
+                    "seqNr": 11
+                },
+                {
+                    "expTgt": null,
+                    "Text": ";Criterion;",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 12
+                },
+                {
+                    "expTgt": "Criterion",
+                    "Text": null,
+                    "srcOrTgt": "Tgt",
+                    "segmentType": "Exp",
+                    "expSQL": "/* I[Criterion] */\n select\n distinct\n        \"Criterion\" as src, \"Criterion\" as tgt\n from \"Criterion\"\n where \"Criterion\" IS NOT NULL",
+                    "seqNr": 13
+                },
+                {
+                    "expTgt": null,
+                    "Text": "{EX} InsPair;varShowValue;Variable;",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 14
+                },
+                {
+                    "expTgt": "Variable",
+                    "Text": null,
+                    "srcOrTgt": "Src",
+                    "segmentType": "Exp",
+                    "expSQL": "/* I[Variable] */\n select\n distinct\n        \"Variable\" as src, \"Variable\" as tgt\n from \"Variable\"\n where \"Variable\" IS NOT NULL",
+                    "seqNr": 15
+                },
+                {
+                    "expTgt": null,
+                    "Text": ";VarValue;",
+                    "srcOrTgt": null,
+                    "segmentType": "Text",
+                    "expSQL": null,
+                    "seqNr": 16
+                },
+                {
+                    "expTgt": "VarValue",
+                    "Text": null,
+                    "srcOrTgt": "Src",
+                    "segmentType": "Exp",
+                    "expSQL": "select\n distinct\n        \"Variable\" as src, \"varValue\" as tgt\n from \"Variable\"\n where \"Variable\" IS NOT NULL AND \"varValue\" IS NOT NULL",
+                    "seqNr": 17
+                }
+            ],
+            "name": "critShowText - Substitute variable name by its value",
+            "meaning": "If a Variable has a value, and is used in a Criterion that is not being\nre-initialized, then it must appear in the ShowText of the Criterion.",
+            "srcConcept": "Variable",
+            "conjunctIds": [
+                "conj_2"
+            ],
+            "message": ""
+        }
+    ],
+    "invariants": [
+        {
+            "origin": "line 74:1, file CritTexts.adl",
+            "tgtConcept": "Criterion",
+            "ruleAdl": "varShowCrit |- varCrit",
+            "pairView": null,
+            "name": "varShowCrit integrity",
+            "meaning": "",
+            "srcConcept": "Variable",
+            "conjunctIds": [
+                "conj_19"
+            ],
+            "message": ""
+        },
+        {
+            "origin": "line 78:1, file CritTexts.adl",
+            "tgtConcept": "VarValue",
+            "ruleAdl": "varShowValue~;varValue |- I[VarValue]",
+            "pairView": null,
+            "name": "varShowValue integrity",
+            "meaning": "",
+            "srcConcept": "VarValue",
+            "conjunctIds": [
+                "conj_10"
+            ],
+            "message": ""
+        },
+        {
+            "origin": "line 14:1, file CritTexts.adl",
+            "tgtConcept": "CritText",
+            "ruleAdl": "critText~;critText |- I[CritText]",
+            "pairView": null,
+            "name": "UNI critText::Criterion*CritText",
+            "meaning": "critText[Criterion\\*CritText] is univalent",
+            "srcConcept": "CritText",
+            "conjunctIds": [
+                "conj_7"
+            ],
+            "message": "critText[Criterion\\*CritText] is not univalent"
+        },
+        {
+            "origin": "line 14:1, file CritTexts.adl",
+            "tgtConcept": "Criterion",
+            "ruleAdl": "I[Criterion] |- critText;critText~",
+            "pairView": null,
+            "name": "TOT critText::Criterion*CritText",
+            "meaning": "critText[Criterion\\*CritText] is total",
+            "srcConcept": "Criterion",
+            "conjunctIds": [
+                "conj_20"
+            ],
+            "message": "critText[Criterion\\*CritText] is not total"
+        },
+        {
+            "origin": "line 15:1, file CritTexts.adl",
+            "tgtConcept": "CritText",
+            "ruleAdl": "critShowText~;critShowText |- I[CritText]",
+            "pairView": null,
+            "name": "UNI critShowText::Criterion*CritText",
+            "meaning": "critShowText[Criterion\\*CritText] is univalent",
+            "srcConcept": "CritText",
+            "conjunctIds": [
+                "conj_6"
+            ],
+            "message": "critShowText[Criterion\\*CritText] is not univalent"
+        },
+        {
+            "origin": "line 18:1, file CritTexts.adl",
+            "tgtConcept": "PropertyName",
+            "ruleAdl": "varName~;varName |- I[PropertyName]",
+            "pairView": null,
+            "name": "UNI varName::Variable*PropertyName",
+            "meaning": "varName[Variable\\*PropertyName] is univalent",
+            "srcConcept": "PropertyName",
+            "conjunctIds": [
+                "conj_8"
+            ],
+            "message": "varName[Variable\\*PropertyName] is not univalent"
+        },
+        {
+            "origin": "line 18:1, file CritTexts.adl",
+            "tgtConcept": "Variable",
+            "ruleAdl": "I[Variable] |- varName;varName~",
+            "pairView": null,
+            "name": "TOT varName::Variable*PropertyName",
+            "meaning": "varName[Variable\\*PropertyName] is total",
+            "srcConcept": "Variable",
+            "conjunctIds": [
+                "conj_21"
+            ],
+            "message": "varName[Variable\\*PropertyName] is not total"
+        },
+        {
+            "origin": "line 20:1, file CritTexts.adl",
+            "tgtConcept": "VarValue",
+            "ruleAdl": "varValue~;varValue |- I[VarValue]",
+            "pairView": null,
+            "name": "UNI varValue::Variable*VarValue",
+            "meaning": "varValue[Variable\\*VarValue] is univalent",
+            "srcConcept": "VarValue",
+            "conjunctIds": [
+                "conj_11"
+            ],
+            "message": "varValue[Variable\\*VarValue] is not univalent"
+        },
+        {
+            "origin": "line 28:1, file CritTexts.adl",
+            "tgtConcept": "CritText",
+            "ruleAdl": "critParsedText~;critParsedText |- I[CritText]",
+            "pairView": null,
+            "name": "UNI critParsedText::Criterion*CritText",
+            "meaning": "critParsedText[Criterion\\*CritText] is univalent",
+            "srcConcept": "CritText",
+            "conjunctIds": [
+                "conj_5"
+            ],
+            "message": "critParsedText[Criterion\\*CritText] is not univalent"
+        },
+        {
+            "origin": "line 76:1, file CritTexts.adl",
+            "tgtConcept": "VarValue",
+            "ruleAdl": "varShowValue~;varShowValue |- I[VarValue]",
+            "pairView": null,
+            "name": "UNI varShowValue::Variable*VarValue",
+            "meaning": "varShowValue[Variable\\*VarValue] is univalent",
+            "srcConcept": "VarValue",
+            "conjunctIds": [
+                "conj_9"
+            ],
+            "message": "varShowValue[Variable\\*VarValue] is not univalent"
+        },
+        {
+            "origin": "line 80:1, file CritTexts.adl",
+            "tgtConcept": "Criterion",
+            "ruleAdl": "critInitReq = critInitReq~",
+            "pairView": null,
+            "name": "SYM critInitReq::Criterion*Criterion",
+            "meaning": "critInitReq[Criterion] is symmetric",
+            "srcConcept": "Criterion",
+            "conjunctIds": [
+                "conj_24"
+            ],
+            "message": "critInitReq[Criterion] is not symmetric"
+        },
+        {
+            "origin": "line 80:1, file CritTexts.adl",
+            "tgtConcept": "Criterion",
+            "ruleAdl": "critInitReq~ /\\ critInitReq |- I[Criterion]",
+            "pairView": null,
+            "name": "ASY critInitReq::Criterion*Criterion",
+            "meaning": "critInitReq[Criterion] is antisymmetric",
+            "srcConcept": "Criterion",
+            "conjunctIds": [
+                "conj_14"
+            ],
+            "message": "critInitReq[Criterion] is not antisymmetric"
+        },
+        {
+            "origin": "line 80:1, file CritTexts.adl",
+            "tgtConcept": "Criterion",
+            "ruleAdl": "critInitReq~;critInitReq |- I[Criterion]",
+            "pairView": null,
+            "name": "UNI critInitReq::Criterion*Criterion",
+            "meaning": "critInitReq[Criterion\\*Criterion] is univalent",
+            "srcConcept": "Criterion",
+            "conjunctIds": [
+                "conj_12"
+            ],
+            "message": "critInitReq[Criterion\\*Criterion] is not univalent"
+        },
+        {
+            "origin": "line 80:1, file CritTexts.adl",
+            "tgtConcept": "Criterion",
+            "ruleAdl": "critInitReq;critInitReq~ |- I[Criterion]",
+            "pairView": null,
+            "name": "INJ critInitReq::Criterion*Criterion",
+            "meaning": "critInitReq[Criterion\\*Criterion] is injective",
+            "srcConcept": "Criterion",
+            "conjunctIds": [
+                "conj_12"
+            ],
+            "message": "critInitReq[Criterion\\*Criterion] is not injective"
+        }
+    ]
+}

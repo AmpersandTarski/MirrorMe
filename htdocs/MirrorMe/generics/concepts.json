@@ -1,0 +1,186 @@
+[
+    {
+        "defaultViewId": "ShowCrit",
+        "generalizations": [],
+        "interfaces": [],
+        "specializations": [],
+        "name": "Criterion",
+        "affectedConjuncts": [
+            "conj_0",
+            "conj_1",
+            "conj_12",
+            "conj_13",
+            "conj_14",
+            "conj_15",
+            "conj_16",
+            "conj_17",
+            "conj_18",
+            "conj_19",
+            "conj_2",
+            "conj_20",
+            "conj_22",
+            "conj_23",
+            "conj_24",
+            "conj_3",
+            "conj_4",
+            "conj_5",
+            "conj_6",
+            "conj_7"
+        ],
+        "type": "OBJECT",
+        "conceptTable": {
+            "cols": [
+                "Criterion"
+            ],
+            "name": "Criterion"
+        }
+    },
+    {
+        "defaultViewId": null,
+        "generalizations": [],
+        "interfaces": [],
+        "specializations": [],
+        "name": "PropertyName",
+        "affectedConjuncts": [
+            "conj_13",
+            "conj_16",
+            "conj_17",
+            "conj_18",
+            "conj_21",
+            "conj_22",
+            "conj_4",
+            "conj_8"
+        ],
+        "type": "ALPHANUMERIC",
+        "conceptTable": {
+            "cols": [
+                "PropertyName"
+            ],
+            "name": "PropertyName"
+        }
+    },
+    {
+        "defaultViewId": null,
+        "generalizations": [],
+        "interfaces": [],
+        "specializations": [],
+        "name": "CritText",
+        "affectedConjuncts": [
+            "conj_0",
+            "conj_15",
+            "conj_20",
+            "conj_22",
+            "conj_3",
+            "conj_4",
+            "conj_5",
+            "conj_6",
+            "conj_7"
+        ],
+        "type": "ALPHANUMERIC",
+        "conceptTable": {
+            "cols": [
+                "CritText"
+            ],
+            "name": "CritText"
+        }
+    },
+    {
+        "defaultViewId": null,
+        "generalizations": [],
+        "interfaces": [],
+        "specializations": [],
+        "name": "Variable",
+        "affectedConjuncts": [
+            "conj_0",
+            "conj_1",
+            "conj_10",
+            "conj_11",
+            "conj_13",
+            "conj_16",
+            "conj_17",
+            "conj_18",
+            "conj_19",
+            "conj_2",
+            "conj_21",
+            "conj_23",
+            "conj_8",
+            "conj_9"
+        ],
+        "type": "OBJECT",
+        "conceptTable": {
+            "cols": [
+                "Variable"
+            ],
+            "name": "Variable"
+        }
+    },
+    {
+        "defaultViewId": null,
+        "generalizations": [],
+        "interfaces": [],
+        "specializations": [],
+        "name": "VarValue",
+        "affectedConjuncts": [
+            "conj_1",
+            "conj_10",
+            "conj_11",
+            "conj_2",
+            "conj_9"
+        ],
+        "type": "ALPHANUMERIC",
+        "conceptTable": {
+            "cols": [
+                "VarValue"
+            ],
+            "name": "VarValue"
+        }
+    },
+    {
+        "defaultViewId": null,
+        "generalizations": [],
+        "interfaces": [],
+        "specializations": [],
+        "name": "Message",
+        "affectedConjuncts": [],
+        "type": "ALPHANUMERIC",
+        "conceptTable": {
+            "cols": [
+                "Message"
+            ],
+            "name": "Message"
+        }
+    },
+    {
+        "defaultViewId": null,
+        "generalizations": [],
+        "interfaces": [
+            "Criteria and Variables",
+            "Debug Information"
+        ],
+        "specializations": [],
+        "name": "SESSION",
+        "affectedConjuncts": [],
+        "type": "OBJECT",
+        "conceptTable": {
+            "cols": [
+                "SESSION"
+            ],
+            "name": "SESSION"
+        }
+    },
+    {
+        "defaultViewId": null,
+        "generalizations": [],
+        "interfaces": [],
+        "specializations": [],
+        "name": "ONE",
+        "affectedConjuncts": [],
+        "type": "OBJECT",
+        "conceptTable": {
+            "cols": [
+                "ONE"
+            ],
+            "name": "ONE"
+        }
+    }
+]

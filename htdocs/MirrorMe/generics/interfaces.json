@@ -1,0 +1,602 @@
+[
+    {
+        "interfaceRoles": [],
+        "boxClass": null,
+        "ifcObject": {
+            "NormalizationSteps": [
+                "    '_SESSION'[SESSION]"
+            ],
+            "expr": {
+                "tgtConcept": "SESSION",
+                "isUni": true,
+                "isIdent": false,
+                "srcConcept": "SESSION",
+                "query": "/* case: EMp1 val c */\n select\n distinct\n        \"SESSION\" as src, \"SESSION\" as tgt\n from \"SESSION\"\n where \"SESSION\" = '_SESSION'",
+                "isTot": false
+            },
+            "viewId": null,
+            "crud": {
+                "read": true,
+                "create": false,
+                "delete": false,
+                "update": false
+            },
+            "relation": null,
+            "subinterfaces": {
+                "crud": null,
+                "refIsLinTo": null,
+                "ifcObjects": [
+                    {
+                        "NormalizationSteps": [
+                            "    V[SESSION*Criterion]"
+                        ],
+                        "expr": {
+                            "tgtConcept": "Criterion",
+                            "isUni": false,
+                            "isIdent": false,
+                            "srcConcept": "SESSION",
+                            "query": "/* case: (EDcV (Sign s t))   V[ \"[SESSION*Criterion]\" ] */\n select\n distinct\n        fst.\"SESSION\" as src, snd.\"Criterion\" as tgt\n from \"SESSION\" as fst,\n      \"Criterion\" as snd\n where fst.\"SESSION\" IS NOT NULL AND snd.\"Criterion\" IS NOT NULL",
+                            "isTot": true
+                        },
+                        "viewId": "ShowCrit",
+                        "crud": {
+                            "read": true,
+                            "create": true,
+                            "delete": false,
+                            "update": false
+                        },
+                        "relation": null,
+                        "subinterfaces": {
+                            "crud": null,
+                            "refIsLinTo": null,
+                            "ifcObjects": [
+                                {
+                                    "NormalizationSteps": [
+                                        "    critText"
+                                    ],
+                                    "expr": {
+                                        "tgtConcept": "CritText",
+                                        "isUni": true,
+                                        "isIdent": false,
+                                        "srcConcept": "Criterion",
+                                        "query": "select\n distinct\n        \"Criterion\" as src, \"critText\" as tgt\n from \"Criterion\"\n where \"Criterion\" IS NOT NULL AND \"critText\" IS NOT NULL",
+                                        "isTot": true
+                                    },
+                                    "viewId": null,
+                                    "crud": {
+                                        "read": true,
+                                        "create": false,
+                                        "delete": true,
+                                        "update": true
+                                    },
+                                    "relation": "critText[Criterion*CritText]",
+                                    "subinterfaces": null,
+                                    "id": "Criterion_32_definition",
+                                    "relationIsFlipped": false,
+                                    "label": "Criterion definition"
+                                },
+                                {
+                                    "NormalizationSteps": [
+                                        "    critShowText"
+                                    ],
+                                    "expr": {
+                                        "tgtConcept": "CritText",
+                                        "isUni": true,
+                                        "isIdent": false,
+                                        "srcConcept": "Criterion",
+                                        "query": "select\n distinct\n        \"Criterion\" as src, \"critShowText\" as tgt\n from \"Criterion\"\n where \"Criterion\" IS NOT NULL AND \"critShowText\" IS NOT NULL",
+                                        "isTot": false
+                                    },
+                                    "viewId": null,
+                                    "crud": {
+                                        "read": true,
+                                        "create": false,
+                                        "delete": false,
+                                        "update": false
+                                    },
+                                    "relation": "critShowText[Criterion*CritText]",
+                                    "subinterfaces": null,
+                                    "id": "Criterion_32_as_32_shown",
+                                    "relationIsFlipped": false,
+                                    "label": "Criterion as shown"
+                                }
+                            ],
+                            "refSubInterfaceId": null,
+                            "boxClass": "COLS"
+                        },
+                        "id": "Criteria",
+                        "relationIsFlipped": null,
+                        "label": "Criteria"
+                    },
+                    {
+                        "NormalizationSteps": [
+                            "    V[SESSION*Variable]"
+                        ],
+                        "expr": {
+                            "tgtConcept": "Variable",
+                            "isUni": false,
+                            "isIdent": false,
+                            "srcConcept": "SESSION",
+                            "query": "/* case: (EDcV (Sign s t))   V[ \"[SESSION*Variable]\" ] */\n select\n distinct\n        fst.\"SESSION\" as src, snd.\"Variable\" as tgt\n from \"SESSION\" as fst,\n      \"Variable\" as snd\n where fst.\"SESSION\" IS NOT NULL AND snd.\"Variable\" IS NOT NULL",
+                            "isTot": true
+                        },
+                        "viewId": null,
+                        "crud": {
+                            "read": true,
+                            "create": false,
+                            "delete": false,
+                            "update": false
+                        },
+                        "relation": null,
+                        "subinterfaces": {
+                            "crud": null,
+                            "refIsLinTo": null,
+                            "ifcObjects": [
+                                {
+                                    "NormalizationSteps": [
+                                        "    varName"
+                                    ],
+                                    "expr": {
+                                        "tgtConcept": "PropertyName",
+                                        "isUni": true,
+                                        "isIdent": false,
+                                        "srcConcept": "Variable",
+                                        "query": "select\n distinct\n        \"Variable\" as src, \"varName\" as tgt\n from \"Variable\"\n where \"Variable\" IS NOT NULL AND \"varName\" IS NOT NULL",
+                                        "isTot": true
+                                    },
+                                    "viewId": null,
+                                    "crud": {
+                                        "read": true,
+                                        "create": false,
+                                        "delete": false,
+                                        "update": false
+                                    },
+                                    "relation": "varName[Variable*PropertyName]",
+                                    "subinterfaces": null,
+                                    "id": "Var",
+                                    "relationIsFlipped": false,
+                                    "label": "Var"
+                                },
+                                {
+                                    "NormalizationSteps": [
+                                        "    V[Variable*Message];'='[Message]"
+                                    ],
+                                    "expr": {
+                                        "tgtConcept": "Message",
+                                        "isUni": false,
+                                        "isIdent": false,
+                                        "srcConcept": "Variable",
+                                        "query": "/* case: (ECps es), with two or more elements in es.V[Variable*Message];'='[Message] */\n select\n distinct\n        fence0.src as src, fence1.tgt as tgt\n from (/* case: (EDcV (Sign s t))   V[ \"[Variable*Message]\" ] */\n       select\n       distinct\n              fst.\"Variable\" as src, snd.\"Message\" as tgt\n       from \"Variable\" as fst,\n            \"Message\" as snd\n       where fst.\"Variable\" IS NOT NULL AND snd.\"Message\" IS NOT NULL)\n      as fence0,\n      (/* case: EMp1 val c */\n       select\n       distinct\n              \"Message\" as src, \"Message\" as tgt\n       from \"Message\"\n       where \"Message\" = '=')\n      as fence1\n where fence0.tgt = fence1.src",
+                                        "isTot": false
+                                    },
+                                    "viewId": null,
+                                    "crud": {
+                                        "read": true,
+                                        "create": false,
+                                        "delete": false,
+                                        "update": false
+                                    },
+                                    "relation": null,
+                                    "subinterfaces": null,
+                                    "id": "is",
+                                    "relationIsFlipped": null,
+                                    "label": "is"
+                                },
+                                {
+                                    "NormalizationSteps": [
+                                        "    varValue"
+                                    ],
+                                    "expr": {
+                                        "tgtConcept": "VarValue",
+                                        "isUni": true,
+                                        "isIdent": false,
+                                        "srcConcept": "Variable",
+                                        "query": "select\n distinct\n        \"Variable\" as src, \"varValue\" as tgt\n from \"Variable\"\n where \"Variable\" IS NOT NULL AND \"varValue\" IS NOT NULL",
+                                        "isTot": false
+                                    },
+                                    "viewId": null,
+                                    "crud": {
+                                        "read": true,
+                                        "create": false,
+                                        "delete": true,
+                                        "update": true
+                                    },
+                                    "relation": "varValue[Variable*VarValue]",
+                                    "subinterfaces": null,
+                                    "id": "Val",
+                                    "relationIsFlipped": false,
+                                    "label": "Val"
+                                },
+                                {
+                                    "NormalizationSteps": [
+                                        "    varCrit"
+                                    ],
+                                    "expr": {
+                                        "tgtConcept": "Criterion",
+                                        "isUni": false,
+                                        "isIdent": false,
+                                        "srcConcept": "Variable",
+                                        "query": "select\n distinct\n        \"Variable\" as src, \"Criterion\" as tgt\n from \"varCrit\"",
+                                        "isTot": false
+                                    },
+                                    "viewId": "ShowCrit",
+                                    "crud": {
+                                        "read": true,
+                                        "create": false,
+                                        "delete": false,
+                                        "update": false
+                                    },
+                                    "relation": "varCrit[Variable*Criterion]",
+                                    "subinterfaces": null,
+                                    "id": "Used_32_in_32_criteria",
+                                    "relationIsFlipped": false,
+                                    "label": "Used in criteria"
+                                }
+                            ],
+                            "refSubInterfaceId": null,
+                            "boxClass": "COLS"
+                        },
+                        "id": "Variables",
+                        "relationIsFlipped": null,
+                        "label": "Variables"
+                    }
+                ],
+                "refSubInterfaceId": null,
+                "boxClass": "ROWSNL"
+            },
+            "id": "Criteria_32_and_32_Variables",
+            "relationIsFlipped": null,
+            "label": "Criteria and Variables"
+        }
+    },
+    {
+        "interfaceRoles": [],
+        "boxClass": null,
+        "ifcObject": {
+            "NormalizationSteps": [
+                "    '_SESSION'[SESSION]"
+            ],
+            "expr": {
+                "tgtConcept": "SESSION",
+                "isUni": true,
+                "isIdent": false,
+                "srcConcept": "SESSION",
+                "query": "/* case: EMp1 val c */\n select\n distinct\n        \"SESSION\" as src, \"SESSION\" as tgt\n from \"SESSION\"\n where \"SESSION\" = '_SESSION'",
+                "isTot": false
+            },
+            "viewId": null,
+            "crud": {
+                "read": true,
+                "create": false,
+                "delete": false,
+                "update": false
+            },
+            "relation": null,
+            "subinterfaces": {
+                "crud": null,
+                "refIsLinTo": null,
+                "ifcObjects": [
+                    {
+                        "NormalizationSteps": [
+                            "    V[SESSION*Criterion]"
+                        ],
+                        "expr": {
+                            "tgtConcept": "Criterion",
+                            "isUni": false,
+                            "isIdent": false,
+                            "srcConcept": "SESSION",
+                            "query": "/* case: (EDcV (Sign s t))   V[ \"[SESSION*Criterion]\" ] */\n select\n distinct\n        fst.\"SESSION\" as src, snd.\"Criterion\" as tgt\n from \"SESSION\" as fst,\n      \"Criterion\" as snd\n where fst.\"SESSION\" IS NOT NULL AND snd.\"Criterion\" IS NOT NULL",
+                            "isTot": true
+                        },
+                        "viewId": "ShowCrit",
+                        "crud": {
+                            "read": true,
+                            "create": true,
+                            "delete": false,
+                            "update": false
+                        },
+                        "relation": null,
+                        "subinterfaces": {
+                            "crud": null,
+                            "refIsLinTo": null,
+                            "ifcObjects": [
+                                {
+                                    "NormalizationSteps": [
+                                        "    critText"
+                                    ],
+                                    "expr": {
+                                        "tgtConcept": "CritText",
+                                        "isUni": true,
+                                        "isIdent": false,
+                                        "srcConcept": "Criterion",
+                                        "query": "select\n distinct\n        \"Criterion\" as src, \"critText\" as tgt\n from \"Criterion\"\n where \"Criterion\" IS NOT NULL AND \"critText\" IS NOT NULL",
+                                        "isTot": true
+                                    },
+                                    "viewId": null,
+                                    "crud": {
+                                        "read": true,
+                                        "create": false,
+                                        "delete": true,
+                                        "update": true
+                                    },
+                                    "relation": "critText[Criterion*CritText]",
+                                    "subinterfaces": null,
+                                    "id": "CritText",
+                                    "relationIsFlipped": false,
+                                    "label": "CritText"
+                                },
+                                {
+                                    "NormalizationSteps": [
+                                        "    critParsedText"
+                                    ],
+                                    "expr": {
+                                        "tgtConcept": "CritText",
+                                        "isUni": true,
+                                        "isIdent": false,
+                                        "srcConcept": "Criterion",
+                                        "query": "select\n distinct\n        \"Criterion\" as src, \"critParsedText\" as tgt\n from \"Criterion\"\n where \"Criterion\" IS NOT NULL AND \"critParsedText\" IS NOT NULL",
+                                        "isTot": false
+                                    },
+                                    "viewId": null,
+                                    "crud": {
+                                        "read": true,
+                                        "create": false,
+                                        "delete": false,
+                                        "update": false
+                                    },
+                                    "relation": "critParsedText[Criterion*CritText]",
+                                    "subinterfaces": null,
+                                    "id": "ParsedText",
+                                    "relationIsFlipped": false,
+                                    "label": "ParsedText"
+                                },
+                                {
+                                    "NormalizationSteps": [
+                                        "    critVarNames"
+                                    ],
+                                    "expr": {
+                                        "tgtConcept": "PropertyName",
+                                        "isUni": false,
+                                        "isIdent": false,
+                                        "srcConcept": "Criterion",
+                                        "query": "select\n distinct\n        \"Criterion\" as src, \"PropertyName\" as tgt\n from \"critVarNames\"",
+                                        "isTot": false
+                                    },
+                                    "viewId": null,
+                                    "crud": {
+                                        "read": true,
+                                        "create": false,
+                                        "delete": false,
+                                        "update": false
+                                    },
+                                    "relation": "critVarNames[Criterion*PropertyName]",
+                                    "subinterfaces": null,
+                                    "id": "VarNames",
+                                    "relationIsFlipped": false,
+                                    "label": "VarNames"
+                                },
+                                {
+                                    "NormalizationSteps": [
+                                        "    critShowText"
+                                    ],
+                                    "expr": {
+                                        "tgtConcept": "CritText",
+                                        "isUni": true,
+                                        "isIdent": false,
+                                        "srcConcept": "Criterion",
+                                        "query": "select\n distinct\n        \"Criterion\" as src, \"critShowText\" as tgt\n from \"Criterion\"\n where \"Criterion\" IS NOT NULL AND \"critShowText\" IS NOT NULL",
+                                        "isTot": false
+                                    },
+                                    "viewId": null,
+                                    "crud": {
+                                        "read": true,
+                                        "create": false,
+                                        "delete": false,
+                                        "update": false
+                                    },
+                                    "relation": "critShowText[Criterion*CritText]",
+                                    "subinterfaces": null,
+                                    "id": "ShowText",
+                                    "relationIsFlipped": false,
+                                    "label": "ShowText"
+                                },
+                                {
+                                    "NormalizationSteps": [
+                                        "    critInitReq"
+                                    ],
+                                    "expr": {
+                                        "tgtConcept": "Criterion",
+                                        "isUni": true,
+                                        "isIdent": false,
+                                        "srcConcept": "Criterion",
+                                        "query": "select\n distinct\n        \"Criterion\" as src, \"critInitReq\" as tgt\n from \"Criterion\"\n where \"Criterion\" IS NOT NULL AND \"critInitReq\" IS NOT NULL",
+                                        "isTot": false
+                                    },
+                                    "viewId": "CritCheckbox",
+                                    "crud": {
+                                        "read": true,
+                                        "create": false,
+                                        "delete": false,
+                                        "update": false
+                                    },
+                                    "relation": "critInitReq[Criterion*Criterion]",
+                                    "subinterfaces": null,
+                                    "id": "InitReq",
+                                    "relationIsFlipped": false,
+                                    "label": "InitReq"
+                                }
+                            ],
+                            "refSubInterfaceId": null,
+                            "boxClass": "COLS"
+                        },
+                        "id": "Criteria",
+                        "relationIsFlipped": null,
+                        "label": "Criteria"
+                    },
+                    {
+                        "NormalizationSteps": [
+                            "    V[SESSION*Variable]"
+                        ],
+                        "expr": {
+                            "tgtConcept": "Variable",
+                            "isUni": false,
+                            "isIdent": false,
+                            "srcConcept": "SESSION",
+                            "query": "/* case: (EDcV (Sign s t))   V[ \"[SESSION*Variable]\" ] */\n select\n distinct\n        fst.\"SESSION\" as src, snd.\"Variable\" as tgt\n from \"SESSION\" as fst,\n      \"Variable\" as snd\n where fst.\"SESSION\" IS NOT NULL AND snd.\"Variable\" IS NOT NULL",
+                            "isTot": true
+                        },
+                        "viewId": null,
+                        "crud": {
+                            "read": true,
+                            "create": false,
+                            "delete": false,
+                            "update": false
+                        },
+                        "relation": null,
+                        "subinterfaces": {
+                            "crud": null,
+                            "refIsLinTo": null,
+                            "ifcObjects": [
+                                {
+                                    "NormalizationSteps": [
+                                        "    varName"
+                                    ],
+                                    "expr": {
+                                        "tgtConcept": "PropertyName",
+                                        "isUni": true,
+                                        "isIdent": false,
+                                        "srcConcept": "Variable",
+                                        "query": "select\n distinct\n        \"Variable\" as src, \"varName\" as tgt\n from \"Variable\"\n where \"Variable\" IS NOT NULL AND \"varName\" IS NOT NULL",
+                                        "isTot": true
+                                    },
+                                    "viewId": null,
+                                    "crud": {
+                                        "read": true,
+                                        "create": false,
+                                        "delete": false,
+                                        "update": false
+                                    },
+                                    "relation": "varName[Variable*PropertyName]",
+                                    "subinterfaces": null,
+                                    "id": "Name",
+                                    "relationIsFlipped": false,
+                                    "label": "Name"
+                                },
+                                {
+                                    "NormalizationSteps": [
+                                        "    varValue"
+                                    ],
+                                    "expr": {
+                                        "tgtConcept": "VarValue",
+                                        "isUni": true,
+                                        "isIdent": false,
+                                        "srcConcept": "Variable",
+                                        "query": "select\n distinct\n        \"Variable\" as src, \"varValue\" as tgt\n from \"Variable\"\n where \"Variable\" IS NOT NULL AND \"varValue\" IS NOT NULL",
+                                        "isTot": false
+                                    },
+                                    "viewId": null,
+                                    "crud": {
+                                        "read": true,
+                                        "create": false,
+                                        "delete": true,
+                                        "update": true
+                                    },
+                                    "relation": "varValue[Variable*VarValue]",
+                                    "subinterfaces": null,
+                                    "id": "Value",
+                                    "relationIsFlipped": false,
+                                    "label": "Value"
+                                },
+                                {
+                                    "NormalizationSteps": [
+                                        "    varShowValue"
+                                    ],
+                                    "expr": {
+                                        "tgtConcept": "VarValue",
+                                        "isUni": true,
+                                        "isIdent": false,
+                                        "srcConcept": "Variable",
+                                        "query": "select\n distinct\n        \"Variable\" as src, \"varShowValue\" as tgt\n from \"Variable\"\n where \"Variable\" IS NOT NULL AND \"varShowValue\" IS NOT NULL",
+                                        "isTot": false
+                                    },
+                                    "viewId": null,
+                                    "crud": {
+                                        "read": true,
+                                        "create": false,
+                                        "delete": false,
+                                        "update": false
+                                    },
+                                    "relation": "varShowValue[Variable*VarValue]",
+                                    "subinterfaces": null,
+                                    "id": "ShowValue",
+                                    "relationIsFlipped": false,
+                                    "label": "ShowValue"
+                                },
+                                {
+                                    "NormalizationSteps": [
+                                        "    varCrit"
+                                    ],
+                                    "expr": {
+                                        "tgtConcept": "Criterion",
+                                        "isUni": false,
+                                        "isIdent": false,
+                                        "srcConcept": "Variable",
+                                        "query": "select\n distinct\n        \"Variable\" as src, \"Criterion\" as tgt\n from \"varCrit\"",
+                                        "isTot": false
+                                    },
+                                    "viewId": "ShowCrit",
+                                    "crud": {
+                                        "read": true,
+                                        "create": false,
+                                        "delete": false,
+                                        "update": false
+                                    },
+                                    "relation": "varCrit[Variable*Criterion]",
+                                    "subinterfaces": null,
+                                    "id": "Crit",
+                                    "relationIsFlipped": false,
+                                    "label": "Crit"
+                                },
+                                {
+                                    "NormalizationSteps": [
+                                        "    varShowCrit"
+                                    ],
+                                    "expr": {
+                                        "tgtConcept": "Criterion",
+                                        "isUni": false,
+                                        "isIdent": false,
+                                        "srcConcept": "Variable",
+                                        "query": "select\n distinct\n        \"Variable\" as src, \"Criterion\" as tgt\n from \"varShowCrit\"",
+                                        "isTot": false
+                                    },
+                                    "viewId": "ShowCrit",
+                                    "crud": {
+                                        "read": true,
+                                        "create": false,
+                                        "delete": false,
+                                        "update": false
+                                    },
+                                    "relation": "varShowCrit[Variable*Criterion]",
+                                    "subinterfaces": null,
+                                    "id": "ShowCrit",
+                                    "relationIsFlipped": false,
+                                    "label": "ShowCrit"
+                                }
+                            ],
+                            "refSubInterfaceId": null,
+                            "boxClass": "COLS"
+                        },
+                        "id": "Variables",
+                        "relationIsFlipped": null,
+                        "label": "Variables"
+                    }
+                ],
+                "refSubInterfaceId": null,
+                "boxClass": "ROWSNL"
+            },
+            "id": "Debug_32_Information",
+            "relationIsFlipped": null,
+            "label": "Debug Information"
+        }
+    }
+]
