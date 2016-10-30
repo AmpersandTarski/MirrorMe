@@ -1,159 +1,190 @@
-﻿CONTEXT ShowCritTexts IN ENGLISH -- This version has been compiled with Ampersand v3.5.0[branch_#228:44da3d6], build time: 08-Apr-16 08:36:09 West-Europa (zomertijd)
-PURPOSE CONTEXT ShowCritTexts
-{+This pattern demonstrates the capability of managing variables that are referred to in a criterion (specification),
-and maintaining an associated so-called 'ShowText' in which the references of variables that have been provided with a value,
-are replaced by that value. The purpose of this pattern is to maintain the actuality/validity of such ShowTexts, 
-in case criterion specifications are being created, updated or deleted, as well as in cases where variables are assigned (updated) values, or such values are deleted.-}
+﻿CONTEXT MirrorMe IN ENGLISH -- This version has been compiled with Ampersand v3.5.0[branch_#228:44da3d6], build time: 08-Apr-16 08:36:09 West-Europa (zomertijd)
 --! Note: this file needs the PHP-function `ParseCritText` to be included as an ExecEngine extension !--
 
-REPRESENT CritText TYPE ALPHANUMERIC
-REPRESENT PropertyName TYPE ALPHANUMERIC
-REPRESENT VarValue TYPE ALPHANUMERIC
-
---[Criteria]--
-critText     :: Criterion * CritText     [UNI,TOT] -- Text that users specify as criterion
-critShowText :: Criterion * CritText     [UNI]     -- as `critText`, with substituted variables
-
---[Variables]--
-varName      :: Variable  * PropertyName [UNI,TOT] -- Label by which a Variable can be identified.
-varCrit      :: Variable  * Criterion              -- Variable is mentioned in Criterion
-varValue     :: Variable  * VarValue     [UNI]     -- Variable has been assigned a VarValue
-
---[Variable name extraction from criteria-texts]--
-{- The idea here is that whenever an Criterion has a description (CritText), it is parsed to see if it contains names of variables. Such names are surrounded by square brackets (`[` and `]`), and hence can be filtered out. The scope of variables is a Transaction, which means that for every detected variable name in a Criterion, a variable must exist in the same transaction.
-This service ensures that `critVarNames` always contains all names of all Variables that are mentioned in a Criterion, and does not contain any name of a Variable that is not mentioned.
-This service assumes that `critText` is functional, i.e. for every Criterion, there exists a CritText.
+PURPOSE PATTERN Statements
+{+Of all utterances people make, some can be considered true or false.
+Such utterances are called "statement".
+This pattern describes the notion of statement for modeling arguments.
+-}
+PURPOSE CONCEPT Statement
+{+If people make claims, they do observations, and they will reason about them.
+In order to decide whether a claim is true, statements are organised in a structure that represents the argument.
+The concept "statement" is used to represent claims, observations, and all other utterances that can be considered true or false.
+-}
+PURPOSE RELATION claimant[Statement*Actor] REF "http://www.thefreedictionary.com/claimant"
+{+ Let us treat a statement made by an individual as as a claim of that individual that the statement is true.
+For this reason, each individual who makes the claim can be registered in the relation "claimant".
+-}
+PURPOSE RELATION registered[Statement*Moment]
+{+For reconstructing events, it can be necessary to administer the moment an observation or a claim is made.
+For this reason, we use the relation "registered".
 -}
 
-critParsedText :: Criterion * CritText [UNI] -- The text as it has been parsed - needed to check if original text is edited.
-ROLE ExecEngine MAINTAINS "Criterion text parsing - extract VarNames from CritText"
-RULE "Criterion text parsing - extract VarNames from CritText": (I-(critVarNames;critVarNames~));critText |- critParsedText
-MEANING "Criteria must have their CritText parsed"
-VIOLATION (TXT "{EX} ParseCritText;critVarNames;Criterion;", SRC I, TXT ";PropertyName;", TGT I
-                  -- ParseCritText populates critVarNames with all variable names found in critText
-          ,TXT "{EX} InsPair;critParsedText;Criterion;", SRC I, TXT ";CritText;", TGT I
-          ,TXT "{EX} DelPair;critShowText;Criterion;", SRC I, TXT ";CritText;", SRC critShowText
+PATTERN Statements
+RELATION claimant[Statement*Actor]
+MEANING "A claimant is the party that makes a claim, especially one that is legally cognizable."
+REPRESENT Moment TYPE DATETIME
+RELATION registered[Statement*Moment]
+MEANING "The moment an observation or a claim is made can be registered."
+ENDPATTERN
+
+PURPOSE PATTERN References
+{+In order to formulate rules, we need references within statements.
+A reference serves as a placeholder for a text.
+-}
+PATTERN References
+REPRESENT StmtText TYPE ALPHANUMERIC
+REPRESENT PropertyName TYPE ALPHANUMERIC
+REPRESENT RefValue TYPE ALPHANUMERIC
+
+--[Statements]--
+stmtText     :: Statement * StmtText     [UNI,TOT] -- Text that users specify as statement
+stmtShowText :: Statement * StmtText     [UNI]     -- as `stmtText`, with substituted references
+
+--[References]--
+refName      :: Reference  * PropertyName [UNI,TOT] -- Label by which a Reference can be identified.
+refStmt      :: Reference  * Statement              -- Reference is mentioned in Statement
+refValue     :: Reference  * RefValue     [UNI]     -- Reference has been assigned a RefValue
+
+--[Reference name extraction from statements-texts]--
+{- The idea here is that whenever an Statement has a description (StmtText), it is parsed to see if it contains names of references.
+Such names are surrounded by square brackets (`[` and `]`), and hence can be filtered out.
+The scope of references is a Transaction, which means that for every detected reference name in a Statement,
+a reference must exist in the same transaction.
+This service ensures that `stmtRefNames` always contains all names of all References that are mentioned in a Statement, and does not contain any name of a Reference that is not mentioned.
+This service assumes that `stmtText` is functional, i.e. for every Statement, there exists a StmtText.
+-}
+
+stmtParsedText :: Statement * StmtText [UNI] -- The text as it has been parsed - needed to check if original text is edited.
+ROLE ExecEngine MAINTAINS "Statement text parsing - extract RefNames from StmtText"
+RULE "Statement text parsing - extract RefNames from StmtText": (I-(stmtRefNames;stmtRefNames~));stmtText |- stmtParsedText
+MEANING "Statements must have their StmtText parsed"
+VIOLATION (TXT "{EX} ParseCritText;stmtRefNames;Statement;", SRC I, TXT ";PropertyName;", TGT I
+                  -- ParseStmtText populates stmtRefNames with all reference names found in stmtText
+          ,TXT "{EX} InsPair;stmtParsedText;Statement;", SRC I, TXT ";StmtText;", TGT I
+          ,TXT "{EX} DelPair;stmtShowText;Statement;", SRC I, TXT ";StmtText;", SRC stmtShowText
           )
 
-ROLE ExecEngine MAINTAINS "Criterion text parsing - delete parsed CritText"
-RULE "Criterion text parsing - delete parsed CritText": critParsedText /\ critText;-I |- -V
-MEANING "Criteria with a CritText that differs from its ParsedText may no longer have a ParsedText"
-VIOLATION (TXT "{EX} DelPair;critParsedText;Criterion;", SRC I, TXT ";CritText;", TGT I)
+ROLE ExecEngine MAINTAINS "Statement text parsing - delete parsed StmtText"
+RULE "Statement text parsing - delete parsed StmtText": stmtParsedText /\ stmtText;-I |- -V
+MEANING "Statements with a StmtText that differs from its ParsedText may no longer have a ParsedText"
+VIOLATION (TXT "{EX} DelPair;stmtParsedText;Statement;", SRC I, TXT ";StmtText;", TGT I)
 
-critVarNames :: Criterion * PropertyName -- The PropertyNames that have been detected to exist in critText
-ROLE ExecEngine MAINTAINS "Criterion text parsing - disassociate VarNames from Criteria"
-RULE "Criterion text parsing - disassociate VarNames from Criteria": 
-  (I-(critParsedText;critParsedText~));critVarNames |- -V
-MEANING "Criteria without a ParsedText may not be associated with variable( name)s"
-VIOLATION (TXT "{EX} DelPair;critVarNames;Criterion;", SRC I, TXT ";PropertyName;", TGT I)
+stmtRefNames :: Statement * PropertyName -- The PropertyNames that have been detected to exist in stmtText
+ROLE ExecEngine MAINTAINS "Statement text parsing - disassociate RefNames from Statements"
+RULE "Statement text parsing - disassociate RefNames from Statements": 
+  (I-(stmtParsedText;stmtParsedText~));stmtRefNames |- -V
+MEANING "Statements without a ParsedText may not be associated with reference( name)s"
+VIOLATION (TXT "{EX} DelPair;stmtRefNames;Statement;", SRC I, TXT ";PropertyName;", TGT I)
 
---[Auto-(de)assocation/creation of Variables with Criteria]--
---$These rules must be adapted in case Variables are scoped (e.g. as in Transactions)
-ROLE ExecEngine MAINTAINS "Variables that are referred to in a Criteria must exist"
-RULE "Variables that are referred to in a Criteria must exist": critVarNames |- V;varName
-VIOLATION (TXT "{EX} NewStruct;Variable"
-              ,TXT ";varName;Variable;_NEW;PropertyName;", TGT I
+--[Auto-(de)assocation/creation of References with Statements]--
+--$These rules must be adapted in case References are scoped (e.g. as in Transactions)
+ROLE ExecEngine MAINTAINS "References that are referred to in a Statements must exist"
+RULE "References that are referred to in a Statements must exist": stmtRefNames |- V;refName
+VIOLATION (TXT "{EX} NewStruct;Reference"
+              ,TXT ";refName;Reference;_NEW;PropertyName;", TGT I
           )
-ROLE ExecEngine MAINTAINS "Variables that are not mentioned in any Criterion may not exist"
-RULE "Variables that are not mentioned in any Criterion may not exist": varName |- V;critVarNames
-VIOLATION (TXT "{EX} DelAtom;Variable;", SRC I)
+ROLE ExecEngine MAINTAINS "References that are not mentioned in any Statement may not exist"
+RULE "References that are not mentioned in any Statement may not exist": refName |- V;stmtRefNames
+VIOLATION (TXT "{EX} DelAtom;Reference;", SRC I)
 
-ROLE ExecEngine MAINTAINS "Variables must be associated with every Criterion that mentions them"
-RULE "Variables must be associated with every Criterion that mentions them": varName;critVarNames~ |- varCrit
-VIOLATION (TXT "{EX} InsPair;varCrit;Variable;", SRC I, TXT ";Criterion;", TGT I)
+ROLE ExecEngine MAINTAINS "References must be associated with every Statement that mentions them"
+RULE "References must be associated with every Statement that mentions them": refName;stmtRefNames~ |- refStmt
+VIOLATION (TXT "{EX} InsPair;refStmt;Reference;", SRC I, TXT ";Statement;", TGT I)
 
-ROLE ExecEngine MAINTAINS "Variables that are associated with a Criterion must be referred to by that Criterion"
-RULE "Variables that are associated with a Criterion must be referred to by that Criterion": varCrit |- varName;critVarNames~
-VIOLATION (TXT "{EX} DelPair;varCrit;Variable;", SRC I, TXT ";Criterion;", TGT I)
+ROLE ExecEngine MAINTAINS "References that are associated with a Statement must be referred to by that Statement"
+RULE "References that are associated with a Statement must be referred to by that Statement": refStmt |- refName;stmtRefNames~
+VIOLATION (TXT "{EX} DelPair;refStmt;Reference;", SRC I, TXT ";Statement;", TGT I)
 
 --[Service body]--
-{-This service ensures that runtime criteria (texts) may be shown to users with the values of variables filled in. More precisely put: this service ensures that for every CritText, a corresponding text (called the ShowText) exists that is the same as the CritText, but has replaced any variable name (i.e. any name surrounded by square brackets (`[` and `]`)) with the value of that variable provided that value exists.-}
+{-This service ensures that runtime statements (texts) may be shown to users with the values of references filled in. More precisely put: this service ensures that for every StmtText, a corresponding text (called the ShowText) exists that is the same as the StmtText, but has replaced any reference name (i.e. any name surrounded by square brackets (`[` and `]`)) with the value of that reference provided that value exists.-}
 
-varShowCrit  :: Variable * Criterion
-MEANING "The value of the Variable has been substituted/is shown in the text of the Criterion"
-RULE "varShowCrit integrity":  varShowCrit |- varCrit
+refShowStmt  :: Reference * Statement
+MEANING "The value of the Reference has been substituted/is shown in the text of the Statement"
+RULE "refShowStmt integrity":  refShowStmt |- refStmt
 
-varShowValue :: Variable * VarValue [UNI]
-MEANING "In Criterions, the Variable has been converted to the specified VarValue"
-RULE "varShowValue integrity": varShowValue~;varValue |- I
+refShowValue :: Reference * RefValue [UNI]
+MEANING "In Statements, the Reference has been converted to the specified RefValue"
+RULE "refShowValue integrity": refShowValue~;refValue |- I
 
-critInitReq  :: Criterion * Criterion [PROP]
-MEANING "A Criterion may have the property that its ShowText needs to be re-initialized."
+stmtInitReq  :: Statement * Statement [PROP]
+MEANING "A Statement may have the property that its ShowText needs to be re-initialized."
 
-ROLE ExecEngine MAINTAINS "critShowText - start initialization sequence"
-RULE "critShowText - start initialization sequence": 
-  (I-(critShowText;critShowText~));critText |- critInitReq;critText
-MEANING "If a Criterion has no ShowText, it needs to be re-initialized"
-VIOLATION (TXT "{EX} InsPair;critInitReq;Criterion;", SRC I, TXT ";Criterion;", SRC I)
+ROLE ExecEngine MAINTAINS "stmtShowText - start initialization sequence"
+RULE "stmtShowText - start initialization sequence": 
+  (I-(stmtShowText;stmtShowText~));stmtText |- stmtInitReq;stmtText
+MEANING "If a Statement has no ShowText, it needs to be re-initialized"
+VIOLATION (TXT "{EX} InsPair;stmtInitReq;Statement;", SRC I, TXT ";Statement;", SRC I)
 
-ROLE ExecEngine MAINTAINS "critShowText - re-init cleanup"
-RULE "critShowText - re-init cleanup": varShowCrit;critInitReq |- -V
-MEANING "If a Criterion needs to be re-initialized, Variables may not be listed as being used in its ShowText"
-VIOLATION (TXT "{EX} DelPair;varShowCrit;Variable;", SRC I, TXT ";Criterion;", TGT I)
+ROLE ExecEngine MAINTAINS "stmtShowText - re-init cleanup"
+RULE "stmtShowText - re-init cleanup": refShowStmt;stmtInitReq |- -V
+MEANING "If a Statement needs to be re-initialized, References may not be listed as being used in its ShowText"
+VIOLATION (TXT "{EX} DelPair;refShowStmt;Reference;", SRC I, TXT ";Statement;", TGT I)
 
-ROLE ExecEngine MAINTAINS "critShowText - initialize"
-RULE "critShowText - initialize": critInitReq-(varShowCrit~;varShowCrit) |- critText;critShowText~
-MEANING "A Criterion that needs to be re-initialized and does not use values of Variables in its ShowText, must have the criterion-text as its ShowText, which complete the re-initialization."
-VIOLATION (TXT "{EX} DelPair;critInitReq;Criterion;", SRC I, TXT ";Criterion;", TGT I
-          ,TXT "{EX} InsPair;critShowText;Criterion;", SRC I, TXT ";CritText;", TGT critText
+ROLE ExecEngine MAINTAINS "stmtShowText - initialize"
+RULE "stmtShowText - initialize": stmtInitReq-(refShowStmt~;refShowStmt) |- stmtText;stmtShowText~
+MEANING "A Statement that needs to be re-initialized and does not use values of References in its ShowText, must have the statement-text as its ShowText, which complete the re-initialization."
+VIOLATION (TXT "{EX} DelPair;stmtInitReq;Statement;", SRC I, TXT ";Statement;", TGT I
+          ,TXT "{EX} InsPair;stmtShowText;Statement;", SRC I, TXT ";StmtText;", TGT stmtText
           )
 
-ROLE ExecEngine MAINTAINS "critShowText - request re-init after a value update"
-RULE "critShowText - request re-init after a value update": 
-  (I /\ (varShowValue;-I;varValue~ \/ -(varValue;varValue~)));varShowCrit |- varShowCrit;critInitReq
-MEANING "If a Variable is used in the ShowText of a Criterion, while its value does not exist (any more), or differs from the value used in the ShowText, then the Criterion needs to be re-initialized."
-VIOLATION (TXT "{EX} DelPair;varShowValue;Variable;", SRC I, TXT ";VarValue;", SRC varShowValue
-          ,TXT "{EX} InsPair;critInitReq;Criterion;", TGT I, TXT ";Criterion;", TGT I
+ROLE ExecEngine MAINTAINS "stmtShowText - request re-init after a value update"
+RULE "stmtShowText - request re-init after a value update": 
+  (I /\ (refShowValue;-I;refValue~ \/ -(refValue;refValue~)));refShowStmt |- refShowStmt;stmtInitReq
+MEANING "If a Reference is used in the ShowText of a Statement, while its value does not exist (any more), or differs from the value used in the ShowText, then the Statement needs to be re-initialized."
+VIOLATION (TXT "{EX} DelPair;refShowValue;Reference;", SRC I, TXT ";RefValue;", SRC refShowValue
+          ,TXT "{EX} InsPair;stmtInitReq;Statement;", TGT I, TXT ";Statement;", TGT I
           )
 
-ROLE ExecEngine MAINTAINS "critShowText - Substitute variable name by its value"
-RULE "critShowText - Substitute variable name by its value": 
-  (I /\ varValue;varValue~);varCrit;(I-critInitReq) |- varShowCrit
-MEANING "If a Variable has a value, and is used in a Criterion that is not being re-initialized, then it must appear in the ShowText of the Criterion."
-VIOLATION (TXT "{EX} InsPair;critShowText;Criterion;", TGT I, TXT ";CritText;"
-              , TXT "{php}str_replace('['.'", SRC varName
-                             , TXT "'.']','", SRC varValue
-                             , TXT "','", TGT critShowText
+ROLE ExecEngine MAINTAINS "stmtShowText - Substitute reference name by its value"
+RULE "stmtShowText - Substitute reference name by its value": 
+  (I /\ refValue;refValue~);refStmt;(I-stmtInitReq) |- refShowStmt
+MEANING "If a Reference has a value, and is used in a Statement that is not being re-initialized, then it must appear in the ShowText of the Statement."
+VIOLATION (TXT "{EX} InsPair;stmtShowText;Statement;", TGT I, TXT ";StmtText;"
+              , TXT "{php}str_replace('['.'", SRC refName
+                             , TXT "'.']','", SRC refValue
+                             , TXT "','", TGT stmtShowText
                              , TXT "')"
-          ,TXT "{EX} InsPair;varShowCrit;Variable;", SRC I, TXT ";Criterion;", TGT I
-          ,TXT "{EX} InsPair;varShowValue;Variable;", SRC I, TXT ";VarValue;", SRC varValue
+          ,TXT "{EX} InsPair;refShowStmt;Reference;", SRC I, TXT ";Statement;", TGT I
+          ,TXT "{EX} InsPair;refShowValue;Reference;", SRC I, TXT ";RefValue;", SRC refValue
           )
+ENDPATTERN
 
 --[INTERFACE]--
 POPULATION Message CONTAINS [ "=" ] REPRESENT Message TYPE ALPHANUMERIC -- Needed in the INTERFACE
 
-INTERFACE "Criteria and Variables": '_SESSION'[SESSION] cRud BOX <ROWSNL>
-   [ "Criteria" : V[SESSION*Criterion] CRuD COLS
-      [ "Criterion definition" : critText cRUd
-      , "Criterion as shown" : critShowText cRud
+INTERFACE "Statements and References": '_SESSION'[SESSION] cRud BOX <ROWSNL>
+   [ "Statements" : V[SESSION*Statement] CRuD COLS
+      [ "Template" : stmtText cRUd
+      , "Statement as shown" : stmtShowText cRud
       ]
-   , "Variables": V[SESSION*Variable] cRud COLS
-      [ "Var" : varName cRud
+   , "References": V[SESSION*Reference] cRud COLS
+      [ "Ref" : refName cRud
       , "is"  : V;'='[Message] cRud
-      , "Val" : varValue cRUd
-      , "Used in criteria" : varCrit cRud <ShowCrit>
+      , "Val" : refValue cRUd
+      , "Used in statements" : refStmt cRud <ShowStmt>
       ]
    ]
 
 INTERFACE "Debug Information": '_SESSION'[SESSION] cRud BOX <ROWSNL>
-   [ "Criteria" : V[SESSION*Criterion] CRuD COLS
-      [ "CritText" : critText cRUd
-      , "ParsedText" : critParsedText cRud
-      , "VarNames" : critVarNames cRud
-      , "ShowText" : critShowText cRud
-      , "InitReq" : critInitReq cRud <CritCheckbox>
+   [ "Statements" : V[SESSION*Statement] CRuD COLS
+      [ "StmtText" : stmtText cRUd
+      , "ParsedText" : stmtParsedText cRud
+      , "RefNames" : stmtRefNames cRud
+      , "ShowText" : stmtShowText cRud
+      , "InitReq" : stmtInitReq cRud <StmtCheckbox>
       ]
-   , "Variables": V[SESSION*Variable] cRud COLS
-      [ "Name" : varName cRud
-      , "Value" : varValue cRUd
-      , "ShowValue" : varShowValue cRud
-      , "Crit" : varCrit cRud
-      , "ShowCrit" : varShowCrit cRud
+   , "References": V[SESSION*Reference] cRud COLS
+      [ "Name" : refName cRud
+      , "Value" : refValue cRUd
+      , "ShowValue" : refShowValue cRud
+      , "Stmt" : refStmt cRud
+      , "ShowStmt" : refShowStmt cRud
       ]
    ]
 
-VIEW ShowCrit: Criterion (critText, TXT " (i.e.: '", critShowText, TXT "')")
-VIEW CritCheckbox : Criterion HTML TEMPLATE "View-PROPERTY.html" ENDVIEW -- Needed because there is a default view for Criterion
+VIEW ShowStmt: Statement (stmtText, TXT " (i.e.: '", stmtShowText, TXT "')")
+VIEW StmtCheckbox : Statement HTML TEMPLATE "View-PROPERTY.html" ENDVIEW -- Needed because there is a default view for Statement
 
 -----------------------------------------------------------
 ENDCONTEXT
