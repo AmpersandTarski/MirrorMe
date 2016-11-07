@@ -1,5 +1,124 @@
 ﻿CONTEXT MirrorMe IN ENGLISH -- This version has been compiled with Ampersand v3.5.0[branch_#228:44da3d6], build time: 08-Apr-16 08:36:09 West-Europa (zomertijd)
---! Note: this file needs the PHP-function `ParseCritText` to be included as an ExecEngine extension !--
+INCLUDE "Arguments.xlsx"
+
+ --! Note: this file needs the PHP-function `ParseCritText` to be included as an ExecEngine extension !--
+
+PATTERN Arguments
+    RELATION supports[Argument*Statement] [UNI]
+    MEANING IN DUTCH "De applicatie registreert van elk argument de onderbouwde bewering."
+    MEANING IN ENGLISH "Of every argument, the application registers the supported statement."
+    RELATION reason[Argument*Statement] [UNI]
+    MEANING IN DUTCH "De applicatie registreert de reden van elk argument."
+    MEANING IN ENGLISH "The application registers the reason of every argument."
+    RELATION arg[Statement*Term] [UNI]
+    MEANING IN DUTCH "De applicatie dient een bewering als vrije tekst in een invoerveld te accepteren."
+    MEANING IN ENGLISH "The application must accept a statement in an input field as free text."
+    RELATION ofClaim[Claim*Argument]  -- ofClaim = states;(supports~;reason)*;reason~
+    MEANING IN DUTCH "De applicatie kan een willekeurig aantal argumenten aan een claim koppelen."
+    MEANING IN ENGLISH "The application can associate an arbitrary number of arguments with a claim."
+    RELATION legalGround[Argument*LegalGround]
+    MEANING IN DUTCH "De applicatie dient juridische gronden van een argument te registreren."
+    MEANING IN ENGLISH "The application must register legal grounds of an argument."
+    REPRESENT LegalGround TYPE ALPHANUMERIC
+
+    RULE addPhrase : arg |- V;phrasing
+    VIOLATION ( TXT "{EX} NewStruct;Statement"
+              , TXT ";phrasing;Statement;_NEW;Term;" , TGT I
+              )
+    ROLE ExecEngine MAINTAINS addPhrase
+
+    RULE addSupport : arg;phrasing~ |- supports~;reason
+    VIOLATION ( TXT "{EX} NewStruct;Argument"
+              , TXT ";supports;Argument;_NEW;Statement;" , SRC I
+              , TXT ";reason;Argument;_NEW;Statement;" , TGT I
+              , TXT ";ofClaim;Claim;", SRC (states\/ofClaim;(reason\/supports))~, TXT ";Argument;_NEW"
+              )
+    ROLE ExecEngine MAINTAINS addSupport
+
+    RULE clearArg : supports~;reason |- -(arg;phrasing~)
+    VIOLATION ( TXT "{EX} DelPair;arg;Statement;", SRC I, TXT ";Term;", SRC arg )
+    ROLE ExecEngine MAINTAINS clearArg
+
+    RULE TOTsupports : I |- supports;supports~
+    MEANING IN DUTCH "De applicatie dient een argument te verwijderen zodra de bewering, die door het argument onderbouwd wordt, wegvalt."
+    MEANING IN ENGLISH "The application must remove an argument as soon as the statement that is supported by the argument ceases to exists."
+    VIOLATION ( TXT "{EX} DelAtom;Argument;", SRC I )
+    ROLE ExecEngine MAINTAINS TOTsupports
+
+    RULE TOTreason : I |- reason;reason~
+    MEANING IN DUTCH "De applicatie dient een argument te verwijderen zodra de reden ervan wegvalt."
+    MEANING IN ENGLISH "The application must remove an argument as soon as its reason no longer exists."
+    VIOLATION ( TXT "{EX} DelAtom;Argument;", SRC I )
+    ROLE ExecEngine MAINTAINS TOTreason
+
+
+    RELATION madeBy[Statement*Actor] [UNI]
+    MEANING IN DUTCH "De applicatie kan een account registeren als persoon, die een bewering heeft gedaan."
+    MEANING IN ENGLISH "The application can register an account as the person who has made a statement."
+
+    RELATION phrasing[Statement*Term] [UNI]
+    MEANING IN DUTCH "De applicatie kan de precieze formulering van een bewering als tekst registeren."
+    MEANING IN ENGLISH "The application can register the exact phrasing of a statement as text."
+    
+    RELATION evidence[Statement*Document]
+    MEANING IN DUTCH "De applicatie kan registeren welk document als bewijsmiddel gekoppeld is aan een bewering."
+    MEANING IN ENGLISH "The application can register which document is used as evidence to substantiate a statement."
+
+    RELATION case[Claim*Case] [UNI]
+    MEANING IN DUTCH "Van elke claim kan de applicatie registeren in welke zaak (`Case`) die claim wordt onderbouwd."
+    MEANING IN ENGLISH "Of every claim, the application can register the `Case` in which that claim is substantiated."
+    RELATION states[Claim*Statement] [UNI]
+    MEANING IN DUTCH "De applicatie kan de bewering (`Statement`) registeren die een claim karakteriseert."
+    MEANING IN ENGLISH "The application can register a `Statement` that characterizes a claim."
+    RELATION object[Claim*LegalThing] [UNI]
+
+    RELATION caseType[Case*CaseType] [UNI]
+    MEANING IN DUTCH "De applicatie kan de zaaksoort (`CaseType`) registeren om de zaak in een categorie in te delen."
+    MEANING IN ENGLISH "The application can register a `CaseType` to categorize the case."
+    RELATION owner[Case*Actor] [UNI] -- must not be TOT to give the Exec-Engine time to compute the owner.
+    MEANING IN DUTCH "De applicatie kan een account registeren als eigenaar van een zaak."
+    MEANING IN ENGLISH "The application can register one account as the owner of a case."
+    RELATION created[Case*Moment] [UNI]
+    MEANING IN DUTCH "De applicatie kan een moment registeren als het moment waarop de zaak is aangemaakt."
+    MEANING IN ENGLISH "The application can register a moment as the time a case has been created."
+
+{- Add later?
+    RELATION claims[Case*Term]
+    MEANING IN DUTCH "De applicatie kan een willekeurig aantal teksten registreren als claim in een gegeven zaak."
+    MEANING IN ENGLISH "The application can register any number of texts as a claim in a given case."
+    RULE addStatement : claims~;owner |- phrasing~;madeBy
+    MEANING "For each claim of owner `p` there exists a statement with identical phrasing, which is made by `p`."
+    VIOLATION ( TXT "{EX} NewStruct;Statement"
+              , TXT ";phrasing;Statement;_NEW;Term;" , SRC I
+              , TXT ";madeBy;Statement;_NEW;Actor;" , TGT I
+              )
+    ROLE ExecEngine MAINTAINS addStatement
+
+    RULE addClaim : claims;phrasing~ |- case~;states
+    MEANING "For each statement that is phrased as a claim in a particular case, there must be a `Claim` that registers this statement."
+    VIOLATION ( TXT "{EX} NewStruct;Claim"
+              , TXT ";case;Claim;_NEW;Case;" , SRC I
+              , TXT ";states;Claim;_NEW;Statement;" , TGT I
+              )
+    ROLE ExecEngine MAINTAINS addClaim
+-}
+
+{-The following code depends on a login mechanism. Revive when it is active
+    RULE sessionAuthor : (I[Statement]#'_SESSION'[SESSION]);ingelogd |- madeBy;V
+    MEANING "Every statement must must be stated by someone. If not, the application will assign the user of the current session as the person who made the statement."
+    VIOLATION ( TXT "{EX} InsPair;madeBy;Statement;", SRC I, TXT ";Actor;" , TGT I
+              , TXT "{EX} InsPair;observed;Statement;", SRC I, TXT ";Moment;{php}date(DATE_ISO8601)" -- Current date in ISO 8601 date format
+              )
+    ROLE ExecEngine MAINTAINS sessionAuthor
+
+    RULE caseAuthor : V[Case*SESSION];'_SESSION';ingelogd |- owner;V
+    MEANING "Every case must have an owner. If not, the application will assign the user of the current session as the initial owner."
+    VIOLATION ( TXT "{EX} InsPair;owner;Case;", SRC I, TXT ";Actor;" , TGT I
+              , TXT "{EX} InsPair;created;Case;", SRC I, TXT ";Moment;{php}date(DATE_ISO8601)" -- Current date in ISO 8601 date format
+              )
+    ROLE ExecEngine MAINTAINS caseAuthor
+-}
+ENDPATTERN
 
 PURPOSE PATTERN Statements
 {+Of all utterances people make, some can be considered true or false.
@@ -15,17 +134,66 @@ PURPOSE RELATION claimant[Statement*Actor] REF "http://www.thefreedictionary.com
 {+ Let us treat a statement made by an individual as as a claim of that individual that the statement is true.
 For this reason, each individual who makes the claim can be registered in the relation "claimant".
 -}
-PURPOSE RELATION registered[Statement*Moment]
+PURPOSE RELATION observed[Statement*Moment]
 {+For reconstructing events, it can be necessary to administer the moment an observation or a claim is made.
-For this reason, we use the relation "registered".
+For this reason, we use the relation "observed".
 -}
 
+PURPOSE PATTERN Validity
+{+In order to talk about true and false statements in a precise way, we need the idea of contexts.
+-}
 PATTERN Statements
+PURPOSE RELATION true[Statement*Context]
+{+Consider the statement "John has blond hair". If this statement is known to be true in some context `c`,
+the tuple ("John has blond hair", c) can exist in the relation `true`.
+However, if this tuple is not in the relation `true`, it does not follow that John does not have blond hair.
+-}
+RELATION true[Statement*Context]
+MEANING "A statement that is considered true within a context is registered in the relation `true`."
+PURPOSE RELATION false[Statement*Context]
+{+The relation `false` is dual to `true`.
+-}
+RELATION false[Statement*Context]
+MEANING "A statement that is considered false within a context is registered in the relation `false`."
+RELATION valid[Statement*Context]
+MEANING "Statements that are valid within a context are registered in the relation `valid`."
+PURPOSE RULE TrueFalseValid
+{+It makes no sense to consider a statement true or false, if it is not valid.
+Therefore, validity is considered a necessary condition for truth or falsehood.
+-}
+RULE TrueFalseValid : true \/ false |- valid
+MEANING "A statement can be true or false in a context only if it is valid within that context."
 RELATION claimant[Statement*Actor]
 MEANING "A claimant is the party that makes a claim, especially one that is legally cognizable."
-REPRESENT Moment TYPE DATETIME
-RELATION registered[Statement*Moment]
-MEANING "The moment an observation or a claim is made can be registered."
+
+    REPRESENT Moment TYPE DATETIME
+    RELATION observed[Statement*Moment] [UNI]
+    MEANING IN DUTCH "De applicatie kan een moment registeren als tijdstip waarop een bewering is gedaan."
+    MEANING IN ENGLISH "The application can register a moment as the time a statement has been made."
+ENDPATTERN
+
+PATTERN Validity
+RELATION valid[Reference*Context]
+MEANING "References that are valid within a context are registered in the relation `valid`."
+RELATION class[Reference*Concept]
+MEANING "References have a type."
+RELATION defines[Context*Concept]
+MEANING "Concepts that exist within a context are registered in the relation `defines`."
+RULE RefValid  : substituted;valid |- valid[Reference*Context]
+MEANING "All references in a statement must be valid in the context in which that statement is valid."
+RULE StmtValid : substituted~;valid |- valid[Statement*Context]
+MEANING "If all references in a statement are valid in a context, that statement is valid in that same context."
+
+RELATION relevant[Statement*Statement]
+MEANING "A statement is relevant for another statement means that the former may be used as evidence for the latter."
+
+RULE relevant |- substituted~;substituted
+MEANING "A statement that is relevant for a claim must refer to an object to which the claim refers as well."
+
+PURPOSE RULE InjObject
+{+A reference in a statement serves as a variable; a placeholder for some (possibly yet unknown) value.
+To ensure that a reference refers to one object only, the relation `object` is made injective-}
+RULE InjObject : object;object~ |- I[Reference]
 ENDPATTERN
 
 PURPOSE PATTERN References
@@ -34,119 +202,134 @@ A reference serves as a placeholder for a text.
 -}
 PATTERN References
 REPRESENT StmtText TYPE ALPHANUMERIC
-REPRESENT PropertyName TYPE ALPHANUMERIC
-REPRESENT RefValue TYPE ALPHANUMERIC
+REPRESENT RefName TYPE ALPHANUMERIC
+REPRESENT Object TYPE ALPHANUMERIC
 
 --[Statements]--
-stmtText     :: Statement * StmtText     [UNI,TOT] -- Text that users specify as statement
-stmtShowText :: Statement * StmtText     [UNI]     -- as `stmtText`, with substituted references
+RELATION template[Statement*Template]     [UNI,TOT] -- Text that users specify as statement; it may contain references.
+RELATION templateText[Template*TemplateText] [UNI]     -- The text of a template with all references
+RELATION stmtShowText[Statement*StmtText] [UNI]     -- The text of a statement, with references substituted by values.
 
 --[References]--
-refName      :: Reference  * PropertyName [UNI,TOT] -- Label by which a Reference can be identified.
-refStmt      :: Reference  * Statement              -- Reference is mentioned in Statement
-refValue     :: Reference  * RefValue     [UNI]     -- Reference has been assigned a RefValue
+RELATION refName[Reference*RefName]       [UNI,TOT] -- Label by which a Reference can be identified.
+RELATION refTemplate[Reference*Template]               -- Reference is mentioned in Statement
+RELATION object[Reference*Object]         [UNI]     -- Reference has been assigned an Object
 
 --[Reference name extraction from statements-texts]--
 {- The idea here is that whenever an Statement has a description (StmtText), it is parsed to see if it contains names of references.
 Such names are surrounded by square brackets (`[` and `]`), and hence can be filtered out.
 The scope of references is a Transaction, which means that for every detected reference name in a Statement,
 a reference must exist in the same transaction.
-This service ensures that `stmtRefNames` always contains all names of all References that are mentioned in a Statement, and does not contain any name of a Reference that is not mentioned.
-This service assumes that `stmtText` is functional, i.e. for every Statement, there exists a StmtText.
+This service ensures that `tmplRefNames` always contains the names of all References that are mentioned in a Template, and does not contain any name of a Reference that is not mentioned.
+This service assumes that `template` is functional, i.e. for every Statement, there exists a Template.
 -}
 
-stmtParsedText :: Statement * StmtText [UNI] -- The text as it has been parsed - needed to check if original text is edited.
-ROLE ExecEngine MAINTAINS "Statement text parsing - extract RefNames from StmtText"
-RULE "Statement text parsing - extract RefNames from StmtText": (I-(stmtRefNames;stmtRefNames~));stmtText |- stmtParsedText
-MEANING "Statements must have their StmtText parsed"
-VIOLATION (TXT "{EX} ParseCritText;stmtRefNames;Statement;", SRC I, TXT ";PropertyName;", TGT I
-                  -- ParseStmtText populates stmtRefNames with all reference names found in stmtText
-          ,TXT "{EX} InsPair;stmtParsedText;Statement;", SRC I, TXT ";StmtText;", TGT I
-          ,TXT "{EX} DelPair;stmtShowText;Statement;", SRC I, TXT ";StmtText;", SRC stmtShowText
+RELATION tmplParsedText[Template*TemplateText] [UNI] -- The text as it has been parsed - needed to check if original text is edited.
+ROLE ExecEngine MAINTAINS "Template text parsing - extract RefNames from TemplateText"
+RULE "Template text parsing - extract RefNames from TemplateText": (I-tmplRefNames;tmplRefNames~);templateText |- tmplParsedText
+MEANING "Templates must have their TemplateText parsed"
+VIOLATION (TXT "{EX} ParseCritText;tmplRefNames;Template;", SRC I, TXT ";RefName;", TGT I
+                  -- ParseCritText populates tmplRefNames with all reference names found in the template
+--        ,TXT "{EX} DelPair;tmplParsedText;Template;", SRC I, TXT ";TemplateText;", TGT tmplParsedText  -- If tmplParsedText is UNI, this line is superfluous.
+          ,TXT "{EX} InsPair;tmplParsedText;Template;", SRC I, TXT ";TemplateText;", TGT I
+-- TODO          ,TXT "{EX} DelPair;stmtShowText;Statement;", SRC I, TXT ";StmtText;", SRC stmtShowText -- TODO: does this empty all statements based on this template?
           )
 
-ROLE ExecEngine MAINTAINS "Statement text parsing - delete parsed StmtText"
-RULE "Statement text parsing - delete parsed StmtText": stmtParsedText /\ stmtText;-I |- -V
-MEANING "Statements with a StmtText that differs from its ParsedText may no longer have a ParsedText"
-VIOLATION (TXT "{EX} DelPair;stmtParsedText;Statement;", SRC I, TXT ";StmtText;", TGT I)
+ROLE ExecEngine MAINTAINS "Template text parsing - delete parsed TemplateText"
+RULE "Template text parsing - delete parsed TemplateText": tmplParsedText /\ templateText;-I |- -V
+MEANING "Templates with a TemplateText that differs from its parsed text may no longer have a tmplParsedText"
+VIOLATION (TXT "{EX} DelPair;tmplParsedText;Template;", SRC I, TXT ";TemplateText;", TGT I)
 
-stmtRefNames :: Statement * PropertyName -- The PropertyNames that have been detected to exist in stmtText
+PURPOSE RELATION tmplRefNames[Template*RefName]
+{+
+Parsing of a template is triggered by deleting all Template-RefName pairs for the relation `tmplRefNames`.
+-}
+RELATION tmplRefNames[Template*RefName]
+MEANING "The reference names that exist in a template are registered in relation `tmplRefNames`."
 ROLE ExecEngine MAINTAINS "Statement text parsing - disassociate RefNames from Statements"
 RULE "Statement text parsing - disassociate RefNames from Statements": 
-  (I-(stmtParsedText;stmtParsedText~));stmtRefNames |- -V
+  (I-tmplParsedText;tmplParsedText~);tmplRefNames |- -V
 MEANING "Statements without a ParsedText may not be associated with reference( name)s"
-VIOLATION (TXT "{EX} DelPair;stmtRefNames;Statement;", SRC I, TXT ";PropertyName;", TGT I)
+VIOLATION (TXT "{EX} DelPair;tmplRefNames;Statement;", SRC I, TXT ";RefName;", TGT I)
 
 --[Auto-(de)assocation/creation of References with Statements]--
 --$These rules must be adapted in case References are scoped (e.g. as in Transactions)
-ROLE ExecEngine MAINTAINS "References that are referred to in a Statements must exist"
-RULE "References that are referred to in a Statements must exist": stmtRefNames |- V;refName
+ROLE ExecEngine MAINTAINS "References that are referred to in a Template must exist"
+RULE "References that are referred to in a Template must exist": tmplRefNames |- V;refName
 VIOLATION (TXT "{EX} NewStruct;Reference"
-              ,TXT ";refName;Reference;_NEW;PropertyName;", TGT I
+              ,TXT ";refName;Reference;_NEW;RefName;", TGT I
           )
-ROLE ExecEngine MAINTAINS "References that are not mentioned in any Statement may not exist"
-RULE "References that are not mentioned in any Statement may not exist": refName |- V;stmtRefNames
+ROLE ExecEngine MAINTAINS "References that are not mentioned in any Template may not exist"
+RULE "References that are not mentioned in any Template may not exist": refName |- V;tmplRefNames
 VIOLATION (TXT "{EX} DelAtom;Reference;", SRC I)
 
 ROLE ExecEngine MAINTAINS "References must be associated with every Statement that mentions them"
-RULE "References must be associated with every Statement that mentions them": refName;stmtRefNames~ |- refStmt
-VIOLATION (TXT "{EX} InsPair;refStmt;Reference;", SRC I, TXT ";Statement;", TGT I)
+RULE "References must be associated with every Statement that mentions them": refName;tmplRefNames~ |- refTemplate
+VIOLATION (TXT "{EX} InsPair;refTemplate;Reference;", SRC I, TXT ";Template;", TGT I)
 
 ROLE ExecEngine MAINTAINS "References that are associated with a Statement must be referred to by that Statement"
-RULE "References that are associated with a Statement must be referred to by that Statement": refStmt |- refName;stmtRefNames~
-VIOLATION (TXT "{EX} DelPair;refStmt;Reference;", SRC I, TXT ";Statement;", TGT I)
+RULE "References that are associated with a Statement must be referred to by that Statement": refTemplate |- refName;tmplRefNames~
+VIOLATION (TXT "{EX} DelPair;refTemplate;Reference;", SRC I, TXT ";Template;", TGT I)
 
 --[Service body]--
 {-This service ensures that runtime statements (texts) may be shown to users with the values of references filled in. More precisely put: this service ensures that for every StmtText, a corresponding text (called the ShowText) exists that is the same as the StmtText, but has replaced any reference name (i.e. any name surrounded by square brackets (`[` and `]`)) with the value of that reference provided that value exists.-}
 
-refShowStmt  :: Reference * Statement
+PURPOSE RELATION substituted[Reference*Statement]
+{+The system registers which references have been substituted in the ShowText of a statement,
+because no references must remain in that text.
+This relation is used to trigger the substitution functionality.
+The invariant is:  substituted=refTemplate;template~
+-}
+RELATION substituted[Reference*Statement]
 MEANING "The value of the Reference has been substituted/is shown in the text of the Statement"
-RULE "refShowStmt integrity":  refShowStmt |- refStmt
+RULE "substituted integrity":  substituted |- refTemplate;template~
 
-refShowValue :: Reference * RefValue [UNI]
-MEANING "In Statements, the Reference has been converted to the specified RefValue"
-RULE "refShowValue integrity": refShowValue~;refValue |- I
+RELATION refShowValue[Reference*Object] [UNI]
+MEANING "In Statements, the Reference has been converted to the specified Object"
+RULE "refShowValue integrity": refShowValue~;object |- I
 
-stmtInitReq  :: Statement * Statement [PROP]
+RELATION stmtInitReq[Statement*Statement] [PROP]
 MEANING "A Statement may have the property that its ShowText needs to be re-initialized."
 
 ROLE ExecEngine MAINTAINS "stmtShowText - start initialization sequence"
 RULE "stmtShowText - start initialization sequence": 
-  (I-(stmtShowText;stmtShowText~));stmtText |- stmtInitReq;stmtText
+  (I-(stmtShowText;stmtShowText~));template |- stmtInitReq;template
 MEANING "If a Statement has no ShowText, it needs to be re-initialized"
 VIOLATION (TXT "{EX} InsPair;stmtInitReq;Statement;", SRC I, TXT ";Statement;", SRC I)
 
 ROLE ExecEngine MAINTAINS "stmtShowText - re-init cleanup"
-RULE "stmtShowText - re-init cleanup": refShowStmt;stmtInitReq |- -V
+RULE "stmtShowText - re-init cleanup": substituted;stmtInitReq |- -V
 MEANING "If a Statement needs to be re-initialized, References may not be listed as being used in its ShowText"
-VIOLATION (TXT "{EX} DelPair;refShowStmt;Reference;", SRC I, TXT ";Statement;", TGT I)
+VIOLATION (TXT "{EX} DelPair;substituted;Reference;", SRC I, TXT ";Statement;", TGT I)
 
+{-TODO: fix this, because it compares a TemplateText with a ShowText.
 ROLE ExecEngine MAINTAINS "stmtShowText - initialize"
-RULE "stmtShowText - initialize": stmtInitReq-(refShowStmt~;refShowStmt) |- stmtText;stmtShowText~
+RULE "stmtShowText - initialize": stmtInitReq-(substituted~;substituted) |- template;stmtShowText~
 MEANING "A Statement that needs to be re-initialized and does not use values of References in its ShowText, must have the statement-text as its ShowText, which complete the re-initialization."
 VIOLATION (TXT "{EX} DelPair;stmtInitReq;Statement;", SRC I, TXT ";Statement;", TGT I
-          ,TXT "{EX} InsPair;stmtShowText;Statement;", SRC I, TXT ";StmtText;", TGT stmtText
+          ,TXT "{EX} InsPair;stmtShowText;Statement;", SRC I, TXT ";StmtText;", TGT template
           )
+-}
 
 ROLE ExecEngine MAINTAINS "stmtShowText - request re-init after a value update"
 RULE "stmtShowText - request re-init after a value update": 
-  (I /\ (refShowValue;-I;refValue~ \/ -(refValue;refValue~)));refShowStmt |- refShowStmt;stmtInitReq
+  (I /\ (refShowValue;-I;object~ \/ -(object;object~)));substituted |- substituted;stmtInitReq
 MEANING "If a Reference is used in the ShowText of a Statement, while its value does not exist (any more), or differs from the value used in the ShowText, then the Statement needs to be re-initialized."
-VIOLATION (TXT "{EX} DelPair;refShowValue;Reference;", SRC I, TXT ";RefValue;", SRC refShowValue
+VIOLATION (TXT "{EX} DelPair;refShowValue;Reference;", SRC I, TXT ";Object;", SRC refShowValue
           ,TXT "{EX} InsPair;stmtInitReq;Statement;", TGT I, TXT ";Statement;", TGT I
           )
 
 ROLE ExecEngine MAINTAINS "stmtShowText - Substitute reference name by its value"
 RULE "stmtShowText - Substitute reference name by its value": 
-  (I /\ refValue;refValue~);refStmt;(I-stmtInitReq) |- refShowStmt
+  (I /\ object;object~);refTemplate;template~;(I-stmtInitReq) |- substituted
 MEANING "If a Reference has a value, and is used in a Statement that is not being re-initialized, then it must appear in the ShowText of the Statement."
-VIOLATION (TXT "{EX} InsPair;stmtShowText;Statement;", TGT I, TXT ";StmtText;"
-              , TXT "{php}str_replace('['.'", SRC refName
-                             , TXT "'.']','", SRC refValue
-                             , TXT "','", TGT stmtShowText
-                             , TXT "')"
-          ,TXT "{EX} InsPair;refShowStmt;Reference;", SRC I, TXT ";Statement;", TGT I
-          ,TXT "{EX} InsPair;refShowValue;Reference;", SRC I, TXT ";RefValue;", SRC refValue
+VIOLATION ( TXT "{EX} InsPair;stmtShowText;Statement;", TGT I, TXT ";StmtText;"
+          , TXT "{php}str_replace('['.'", SRC refName
+                         , TXT "'.']','", SRC object
+                         , TXT "','", TGT stmtShowText
+                         , TXT "')"
+          , TXT "{EX} InsPair;substituted;Reference;", SRC I, TXT ";Statement;", TGT I
+          , TXT "{EX} InsPair;refShowValue;Reference;", SRC I, TXT ";Object;", SRC object
           )
 ENDPATTERN
 
@@ -155,35 +338,39 @@ POPULATION Message CONTAINS [ "=" ] REPRESENT Message TYPE ALPHANUMERIC -- Neede
 
 INTERFACE "Statements and References": '_SESSION'[SESSION] cRud BOX <ROWSNL>
    [ "Statements" : V[SESSION*Statement] CRuD COLS
-      [ "Template" : stmtText cRUd
+      [ "TemplateText" : template cRUd
       , "Statement as shown" : stmtShowText cRud
       ]
    , "References": V[SESSION*Reference] cRud COLS
       [ "Ref" : refName cRud
       , "is"  : V;'='[Message] cRud
-      , "Val" : refValue cRUd
-      , "Used in statements" : refStmt cRud <ShowStmt>
+      , "Val" : object cRUd
+      , "Used in templates" : refTemplate;templateText cRud
+      , "Used in statements" : substituted cRud <ShowStmt>
       ]
    ]
 
 INTERFACE "Debug Information": '_SESSION'[SESSION] cRud BOX <ROWSNL>
    [ "Statements" : V[SESSION*Statement] CRuD COLS
-      [ "StmtText" : stmtText cRUd
-      , "ParsedText" : stmtParsedText cRud
-      , "RefNames" : stmtRefNames cRud
-      , "ShowText" : stmtShowText cRud
+      [ "ShowText" : stmtShowText cRud
+      , "Template" : template;templateText cRud
       , "InitReq" : stmtInitReq cRud <StmtCheckbox>
+      ]
+   , "Templates" : V[SESSION*Template] CRuD COLS
+      [ "StmtText" : templateText cRUd
+      , "ParsedText" : tmplParsedText cRud
+      , "RefNames" : tmplRefNames cRud
       ]
    , "References": V[SESSION*Reference] cRud COLS
       [ "Name" : refName cRud
-      , "Value" : refValue cRUd
+      , "Value" : object cRUd
       , "ShowValue" : refShowValue cRud
-      , "Stmt" : refStmt cRud
-      , "ShowStmt" : refShowStmt cRud
+      , "Stmt" : refTemplate cRud
+      , "ShowStmt" : substituted cRud
       ]
    ]
 
-VIEW ShowStmt: Statement (stmtText, TXT " (i.e.: '", stmtShowText, TXT "')")
+VIEW ShowStmt: Statement (template;templateText, TXT " (i.e.: '", stmtShowText, TXT "')")
 VIEW StmtCheckbox : Statement HTML TEMPLATE "View-PROPERTY.html" ENDVIEW -- Needed because there is a default view for Statement
 
 -----------------------------------------------------------
